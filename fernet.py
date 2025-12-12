@@ -46,9 +46,6 @@ def main():
     message = b"Message to encrypt"
     token = cipher.encrypt(message)
 
-    # Create prev mssg
-    prev_mssg = None
-
     CIPHER = "cipher.bin"
 
     if os.path.exists(CIPHER):
@@ -58,6 +55,9 @@ def main():
                 cipher_db = f.read()
         except Exception:
             prev_mssg = None
+    else:
+        prev_mssg = None
+
     # Try to Decrypt with mstr_password
     try:
         cipher2 = Fernet(key)
