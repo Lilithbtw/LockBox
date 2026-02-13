@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Starlette To-Do List</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form method="post">
+        <label>Username:</label><input name="username"><br>
+        <label>Password:</label><input type="password" name="password"><br>
+        <input type="submit" value="Login">
+    </form>
+    {% if error %}
+        <div>
+            {{ error }}
+        </div>
+    {% endif %}    
+<a href="/signup">Sign Up Now</a>
+</body>
+</html>

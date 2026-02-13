@@ -25,7 +25,7 @@ def generate_salt(file: str):
         with open(file,"wb") as f:
             f.write(salt)
         return salt
-
+    
 def main():
     salt = generate_salt("salt.bin")
 

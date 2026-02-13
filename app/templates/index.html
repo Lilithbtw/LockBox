@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LockBox - Your Secrets</title>
+</head>
+<body>
+    <nav>
+        <span>Logged in as User #{{ request.session.user_id }}</span> | <a href="/logout">Logout</a>
+    </nav>
+    
+    <h1>Your Tasks</h1>
+
+    <form method="post" action="/add">
+        <input type="text" name="task" placeholder="Enter secret task..." required>
+        <button type="submit">Add to Vault</button>
+    </form>
+
+    <hr>
+
+    <ul>
+        {% for item in tasks %}
+            <li>
+                {{ item.task }}
+                <a href="/delete/{{ item.id }}">[Delete]</a>
+            </li>
+        {% else %}
+            <li>No tasks found. Your vault is empty!</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
