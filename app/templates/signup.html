@@ -2,15 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Starlette To-Do List</title>
+    <title>LockBox - Signup</title>
 </head>
 <body>
     <h1>Signup</h1>
-        <form method="post">
-            <label>Username:</label><input name="username"><br>
-            <label>Password:</label><input type="password" name="password"><br>
-            <input type="submit" value="Create Account">
-        </form>
+    <form id="signupForm" method="post">
+        <label>Username:</label><input name="username" required><br>
+        <label>Password:</label><input type="password" id="password" name="password" required><br>
+        <input type="submit" value="Create Account">
+    </form>
     <a href="/login">Already have an account?</a>
+
+    <script>
+        document.getElementById('signupForm').onsubmit = function() {
+            const masterPassword = document.getElementById('password').value;
+            sessionStorage.setItem("master_key", masterPassword);
+            return true; 
+        };
+    </script>
 </body>
 </html>

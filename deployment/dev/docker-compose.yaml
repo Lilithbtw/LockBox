@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mariadb:latest
+    container_name: lockbox-db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: my-secret-pw
+      MARIADB_USER: lockbox_usr
+      MARIADB_PASSWORD: secret-pass
+      MARIADB_DATABASE: lockboxdb
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+    ports:
+      - "9000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge

@@ -1,12 +1,16 @@
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
+from os import getenv
+from dotenv import load_dotenv
 
-USER="root"
-PASSWORD="my-secret-pw"
-PORT=3306
-DB_NAME="lockboxdb"
-HOST="localhost"
+load_dotenv(dotenv_path="/home/lilith/projects/LockBox/.env")
+
+USER = getenv("DB_USER")
+PASSWORD = getenv("DB_PASS")
+PORT = getenv("DB_PORT", 3306)
+DB_NAME = getenv("DB_NAME")
+HOST = getenv("DB_HOST")
 
 SERVER_URL = f"mysql+asyncmy://{USER}:{PASSWORD}@{HOST}:{PORT}"
 

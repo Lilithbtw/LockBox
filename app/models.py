@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Text
 from .database import Base
 
 class User(Base):
@@ -13,9 +13,10 @@ class To_Do(Base):
     __tablename__ = "task_list"
 
     id = Column(Integer, primary_key=True, index=True)
-
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    domain = Column(String(30), unique=False, nullable=True)
+    
+    name = Column(Text, unique=False, nullable=True)
 
-    domain_usr = Column(String(150), unique=False, nullable=True)
-    domain_pass = Column(String(150), unique=False, nullable=True)
+    domain = Column(Text, unique=False, nullable=True)
+    domain_usr = Column(Text, unique=False, nullable=True)
+    domain_pass = Column(Text, unique=False, nullable=True)

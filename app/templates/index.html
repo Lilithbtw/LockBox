@@ -2,31 +2,289 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LockBox - Your Secrets</title>
 </head>
 <body>
     <nav>
-        <span>Logged in as User #{{ request.session.user_id }}</span> | <a href="/logout">Logout</a>
+        <span>Logged in as User #{{ request.session.user_id }}</span> |
+        <input type="file" id="csvUpload" accept=".csv" style="display:none;" onchange="handleCSV(this)">
+        <button onclick="document.getElementById('csvUpload').click()">Import CSV</button> | 
+        <button onclick="exportCSV()">Export CSV</button> |
+        <a href="/logout" onclick="sessionStorage.clear();">Logout</a>
     </nav>
+
+    <h1>Your Encrypted Vault</h1>
     
-    <h1>Your Tasks</h1>
-
-    <form method="post" action="/add">
-        <input type="text" name="task" placeholder="Enter secret task..." required>
-        <button type="submit">Add to Vault</button>
+    <form id="vaultForm">
+        <input type="hidden" id="edit_id" value="">
+        <input type="text" id="form_name" name="name" placeholder="Entry Name (e.g. Work Email)">
+        <input type="text" id="form_domain" name="domain" placeholder="Domain (e.g. github.com)" required>
+        <input type="text" id="form_username" name="username" placeholder="Username" required>
+        <input type="password" id="form_password" name="password" placeholder="Password" required>
+        <button type="submit" id="submitBtn">Add to Vault</button>
+        <button type="button" id="cancelBtn" style="display:none;" onclick="resetForm()">Cancel</button>
     </form>
-
     <hr>
-
-    <ul>
-        {% for item in tasks %}
-            <li>
-                {{ item.task }}
-                <a href="/delete/{{ item.id }}">[Delete]</a>
+    <div>
+        <input type="text" id="vaultSearch" placeholder="Search names, domains or usernames..." onkeyup="filterVault()" style="width:100%; padding:8px;">
+    </div>
+    <ul id="vaultList">
+        {% for item in items %}
+            <li class="vault-item" id="item-{{ item.id }}" style="margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px; list-style: none;">
+                <input type="hidden" class="enc-name" value='{{ item.name }}'>
+                <input type="hidden" class="enc-domain" value='{{ item.domain }}'>
+                <input type="hidden" class="enc-user" value='{{ item.domain_usr }}'>
+                <input type="hidden" class="enc-pass" value='{{ item.domain_pass }}'>
+                
+                <div class="entry-container">
+                    <span class="display-label" style="font-weight:bold;">Locked Entry</span> 
+                    <button class="unlock-btn" onclick="unlockEntry(this)">Unlock</button>
+                    <button onclick="prepareEdit('{{ item.id }}', this)">Edit</button>
+                    <a href="/delete/{{ item.id }}" onclick="return confirm('Delete this entry?')">[Delete]</a>
+                </div>
             </li>
         {% else %}
-            <li>No tasks found. Your vault is empty!</li>
+            <li>No secrets found. Your vault is empty!</li>
         {% endfor %}
     </ul>
+
+    <script>
+        const buffToBase64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+        const base64ToBuff = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+
+        async function getEncryptionKey(masterPassword, salt) {
+            const encoder = new TextEncoder();
+            const baseKey = await window.crypto.subtle.importKey(
+                "raw", encoder.encode(masterPassword), "PBKDF2", false, ["deriveKey"]
+            );
+            return window.crypto.subtle.deriveKey(
+                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                baseKey,
+                { name: "AES-GCM", length: 256 },
+                false, ["encrypt", "decrypt"]
+            );
+        }
+
+        async function encrypt(text, masterPassword) {
+            if (!text) return "";
+            const salt = window.crypto.getRandomValues(new Uint8Array(16));
+            const iv = window.crypto.getRandomValues(new Uint8Array(12));
+            const key = await getEncryptionKey(masterPassword, salt);
+            const encoded = new TextEncoder().encode(text);
+            const ciphertext = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
+            return JSON.stringify({
+                ct: buffToBase64(ciphertext),
+                iv: buffToBase64(iv),
+                s: buffToBase64(salt)
+            });
+        }
+
+        async function decrypt(jsonBlob, masterPassword) {
+            if (!jsonBlob || jsonBlob === "None" || jsonBlob === "") return "";
+            try {
+                const data = JSON.parse(jsonBlob);
+                const salt = base64ToBuff(data.s);
+                const iv = base64ToBuff(data.iv);
+                const ciphertext = base64ToBuff(data.ct);
+                const key = await getEncryptionKey(masterPassword, salt);
+                const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
+                return new TextDecoder().decode(decrypted);
+            } catch (e) { return ""; }
+        }
+
+        function copyToClipboard(text) { navigator.clipboard.writeText(text); }
+
+        function togglePassword(btn, pass) {
+            const span = btn.parentElement.querySelector('.pass-text');
+            if (span.innerText === "*******") {
+                span.innerText = pass;
+                btn.innerText = "Hide";
+            } else {
+                span.innerText = "*******";
+                btn.innerText = "Show";
+            }
+        }
+
+        // DECRYPT LABELS ON LOAD FOR SEARCH
+        async function enableSearch() {
+            const masterPass = sessionStorage.getItem("master_key");
+            if (!masterPass) return;
+
+            const items = document.querySelectorAll('.vault-item');
+            for (let li of items) {
+                const encName = li.querySelector('.enc-name').value;
+                const encDomain = li.querySelector('.enc-domain').value;
+                const encUser = li.querySelector('.enc-user').value;
+
+                const name = await decrypt(encName, masterPass);
+                const domain = await decrypt(encDomain, masterPass);
+                const user = await decrypt(encUser, masterPass);
+
+                // UI display logic: Name > Domain > User
+                const label = name || domain || user || "Unnamed Entry";
+                li.querySelector('.display-label').innerText = label;
+                
+                // Add hidden metadata for search to find even when locked
+                const metadata = document.createElement('span');
+                metadata.className = 'search-metadata';
+                metadata.style.display = 'none';
+                metadata.textContent = `${name} ${domain} ${user}`;
+                li.appendChild(metadata);
+            }
+        }
+
+        function filterVault() {
+            const query = document.getElementById('vaultSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.vault-item');
+            items.forEach(li => {
+                const text = li.textContent.toLowerCase();
+                li.style.display = text.includes(query) ? "" : "none";
+            });
+        }
+
+        async function unlockEntry(button) {
+            const masterPass = sessionStorage.getItem("master_key");
+            const li = button.closest('.vault-item');
+            const container = li.querySelector('.entry-container');
+            
+            const domain = await decrypt(li.querySelector('.enc-domain').value, masterPass);
+            const user = await decrypt(li.querySelector('.enc-user').value, masterPass);
+            const pass = await decrypt(li.querySelector('.enc-pass').value, masterPass);
+            const launchUrl = domain.includes('://') ? domain : `//${domain}`;
+
+            container.innerHTML = `
+                <div><strong>Domain:</strong> <span>${domain}</span> <button onclick="window.open('${launchUrl}', '_blank')">Launch</button></div>
+                <div><strong>User:</strong> <span>${user}</span> <button onclick="copyToClipboard('${user}')">Copy</button></div>
+                <div><strong>Pass:</strong> <code class="pass-text">*******</code> 
+                    <button onclick="togglePassword(this, '${pass}')">Show</button>
+                    <button onclick="copyToClipboard('${pass}')">Copy</button>
+                </div>
+            `;
+        }
+
+        async function prepareEdit(id, button) {
+            const masterPass = sessionStorage.getItem("master_key");
+            const li = button.closest('.vault-item');
+            
+            document.getElementById('edit_id').value = id;
+            document.getElementById('form_name').value = await decrypt(li.querySelector('.enc-name').value, masterPass);
+            document.getElementById('form_domain').value = await decrypt(li.querySelector('.enc-domain').value, masterPass);
+            document.getElementById('form_username').value = await decrypt(li.querySelector('.enc-user').value, masterPass);
+            document.getElementById('form_password').value = await decrypt(li.querySelector('.enc-pass').value, masterPass);
+
+            document.getElementById('submitBtn').innerText = "Update Entry";
+            document.getElementById('cancelBtn').style.display = "inline";
+            window.scrollTo(0, 0);
+        }
+
+        function resetForm() {
+            document.getElementById('edit_id').value = "";
+            document.getElementById('vaultForm').reset();
+            document.getElementById('submitBtn').innerText = "Add to Vault";
+            document.getElementById('cancelBtn').style.display = "none";
+        }
+
+        document.getElementById('vaultForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const masterPass = sessionStorage.getItem("master_key");
+            const editId = document.getElementById('edit_id').value;
+            
+            const payload = {
+                name: await encrypt(document.getElementById('form_name').value, masterPass),
+                domain: await encrypt(document.getElementById('form_domain').value, masterPass),
+                domain_usr: await encrypt(document.getElementById('form_username').value, masterPass),
+                domain_pass: await encrypt(document.getElementById('form_password').value, masterPass)
+            };
+
+            const url = editId ? `/edit/${editId}` : "/add";
+            const response = await fetch(url, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) window.location.reload();
+            else alert("Error saving entry.");
+        };
+
+        // --- FIREFOX COMPATIBLE IMPORT/EXPORT ---
+        async function handleCSV(input) {
+            const file = input.files[0];
+            const masterPass = sessionStorage.getItem("master_key");
+            if (!file || !masterPass) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const text = e.target.result;
+                const rows = text.split(/\r?\n/).filter(line => line.trim() !== "").slice(1); 
+
+                for (let row of rows) {
+                    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
+                    const matches = row.match(regex);
+                    if (!matches || matches.length < 3) continue;
+                    const clean = matches.map(val => val.replace(/^"|"$/g, ''));
+
+                    if (clean[0].includes('chrome://FirefoxAccounts')) continue;
+
+                    const payload = {
+                        name: await encrypt(clean[0], masterPass), 
+                        domain: await encrypt(clean[0], masterPass),
+                        domain_usr: await encrypt(clean[1], masterPass),
+                        domain_pass: await encrypt(clean[2], masterPass)
+                    };
+                    await fetch("/add", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                }
+                window.location.reload();
+            };
+            reader.readAsText(file);
+        }
+
+        async function exportCSV() {
+            const masterPass = sessionStorage.getItem("master_key");
+            if (!masterPass) return alert("Unlock vault first.");
+
+            const items = document.querySelectorAll('.vault-item');
+            
+            // Strict Firefox/Chrome compatible Header
+            let csvContent = `"url","username","password","httpRealm","formActionOrigin","guid","timeCreated","timeLastUsed","timePasswordChanged"\n`;
+
+            for (let li of items) {
+                try {
+                    let domain = await decrypt(li.querySelector('.enc-domain').value, masterPass);
+                    const user = await decrypt(li.querySelector('.enc-user').value, masterPass);
+                    const pass = await decrypt(li.querySelector('.enc-pass').value, masterPass);
+
+                    // Ensure the URL has a protocol for cross-browser compatibility
+                    // This regex checks if it starts with anything://
+                    if (domain && !domain.match(/^[a-zA-Z]+:\/\//)) {
+                        domain = "http://" + domain;
+                    }
+
+                    // Escape quotes for CSV safety
+                    const fUrl = `"${domain.replace(/"/g, '""')}"`;
+                    const fUser = `"${user.replace(/"/g, '""')}"`;
+                    const fPass = `"${pass.replace(/"/g, '""')}"`;
+
+                    // Append row with 6 trailing empty fields to match standard specs
+                    csvContent += `${fUrl},${fUser},${fPass},"","","","","",""\n`;
+                } catch (e) {
+                    console.error("Export decryption failed for an item.", e);
+                }
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "vault_export_standard.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        // Run background decryption on load
+        window.addEventListener('load', enableSearch);
+    </script>
 </body>
 </html>
