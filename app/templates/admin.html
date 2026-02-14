@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockBox - Your Encrypted Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-base': '#11111b',
+                        'cyber-surface': '#282a36',
+                        'cyber-elevated': '#313244',
+                        'cyber-primary': '#bd93f9',
+                        'cyber-secondary': '#b4befe',
+                        'cyber-text': '#cdd6f4',
+                        'cyber-muted': '#6c7086',
+                        'cyber-success': '#50fa7b',
+                        'cyber-warning': '#f1fa8c',
+                        'cyber-danger': '#ff5555',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(40, 42, 54, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(189, 147, 249, 0.2);
+        }
+        .glass-nav {
+            background: rgba(40, 42, 54, 0.9);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(189, 147, 249, 0.15);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.3);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        .vault-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .vault-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(189, 147, 249, 0.2);
+        }
+        .locked-gradient {
+            background: linear-gradient(135deg, rgba(189, 147, 249, 0.1) 0%, rgba(180, 190, 254, 0.1) 100%);
+        }
+    </style>
+</head>
+<body class="bg-cyber-base text-cyber-text p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-cyber-primary">User Management</h1>
+            <a href="/" class="text-cyber-muted hover:text-cyber-text">← Back to Vault</a>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-cyber-elevated text-cyber-secondary">
+                    <tr>
+                        <th class="p-4">ID</th>
+                        <th class="p-4">Username</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr class="border-t border-cyber-muted/10 hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-mono text-cyber-muted">{{ user.id }}</td>
+                        <td class="p-4 font-semibold">{{ user.username }}</td>
+                        <td class="p-4 text-right">
+                            {% if user.id != 1 %}
+                            <button onclick="deleteUser({{ user.id }})" class="bg-cyber-danger/10 text-cyber-danger px-4 py-1.5 rounded-lg border border-cyber-danger/20 hover:bg-cyber-danger/20 transition-all">
+                                Delete Account
+                            </button>
+                            {% else %}
+                            <span class="text-xs text-cyber-muted italic">System Admin</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function deleteUser(id) {
+            if (!confirm("CRITICAL: This will delete the user and ALL their encrypted passwords forever. Proceed?")) return;
+            
+            const response = await fetch(`/admin/delete-user/${id}`, { method: 'POST' });
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert("Action failed. Verify admin permissions.");
+            }
+        }
+    </script>
+</body>
+</html>

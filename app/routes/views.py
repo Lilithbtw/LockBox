@@ -2,9 +2,10 @@ from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.exceptions import HTTPException
 from starlette.responses import RedirectResponse, HTMLResponse
-from starlette.requests import Request
 from sqlalchemy import select, delete
 from pydantic import BaseModel
+from dotenv import load_dotenv
+import os
 
 from ..auth import verify_password, get_user_by_username, hash_password
 from ..database import AsyncSessionLocal
@@ -14,6 +15,7 @@ from ..models import *
 templates = Jinja2Templates(directory="app/templates")
 
 async def homepage(request: Request):
+
     user_id = request.session.get("user_id")
     if not user_id:
         return RedirectResponse(url="/login", status_code=303)
@@ -39,11 +41,39 @@ async def not_found(request: Request, exc: HTTPException):
                                     )
 
 async def login_page(request: Request):
+    load_dotenv()
+    onboarding=os.getenv("ONBOARDING")
+
     error = request.query_params.get("error")
-    return templates.TemplateResponse("login.html",{"request": request, "error":error})
+    return templates.TemplateResponse("login.html",{"request": request, "error":error, "onboarding":onboarding})
 
 async def signup_page(request: Request):
     return templates.TemplateResponse("signup.html",{"request": request})
+
+async def admin_page(request: Request):
+    async with AsyncSessionLocal() as session:
+        stmt = select(User)
+        result = await session.execute(stmt)
+        users = result.scalars().all()
+
+    return templates.TemplateResponse(
+        "admin.html", 
+        {"request": request, "users": users}
+    )
+
+async def delete_user(request: Request):
+    user_id = request.path_params.get("user_id")
+    
+    admin_id = request.session.get("user_id")
+    if not admin_id:
+        return RedirectResponse(url="/login", status_code=303)
+
+    async with AsyncSessionLocal() as session:
+        stmt = delete(User).where(User.id == int(user_id))
+        await session.execute(stmt)
+        await session.commit()
+
+    return RedirectResponse(url="/admin", status_code=303)
 
 class VaultEntry(BaseModel):
     name: str | None = None
@@ -87,7 +117,6 @@ async def delete_task(request: Request):
         return RedirectResponse(url="/login", status_code=303)
 
     async with AsyncSessionLocal() as session:
-        # We filter by task_id AND user_id so users can't delete each other's tasks
         stmt = delete(To_Do).where(
             To_Do.id == task_id, 
             To_Do.user_id == current_user_id
@@ -132,26 +161,51 @@ async def signup(request: Request):
     username = form.get("username")
     password = form.get("password")
     
+    # Validate input
     if not username or not password:
-        return RedirectResponse(url="/signup", status_code=303)
+        return templates.TemplateResponse(
+            "signup.html", 
+            {"request": request, "error": "Username and password are required"}
+        )
+    
+    # Check password strength (optional but recommended)
+    if len(password) < 8:
+        return templates.TemplateResponse(
+            "signup.html",
+            {"request": request, "error": "Password must be at least 8 characters"}
+        )
     
     hashed = hash_password(password)
     
     async with AsyncSessionLocal() as session:
+        # Check if username already exists BEFORE trying to insert
+        existing_user = await get_user_by_username(session, username)
+        if existing_user:
+            return templates.TemplateResponse(
+                "signup.html",
+                {"request": request, "error": "Username already exists"}
+            )
+        
+        # Create new user
         new_user = User(username=username, password_hash=hashed)
         session.add(new_user)
+        
         try:
             await session.commit()
-            await session.refresh(new_user) # Get the new ID
+            await session.refresh(new_user)
             
-            # Log them in immediately so the sessionStorage key stays valid
-            request.session["user_id"] = new_user.id 
+            request.session["user_id"] = new_user.id
+            
             return RedirectResponse(url="/", status_code=303)
             
         except Exception as e:
-            print(f"Error: {e}")
-            return RedirectResponse(url="/signup", status_code=303)
-
+            print(f"Database error during signup: {e}")
+            await session.rollback()
+            return templates.TemplateResponse(
+                "signup.html",
+                {"request": request, "error": "An error occurred. Please try again."}
+            )
+        
 async def login(request: Request):
     form = await request.form()
     username = form.get("username")

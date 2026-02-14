@@ -10,7 +10,7 @@ class User(Base):
     password_hash = Column(String(200), nullable=False)
 
 class To_Do(Base):
-    __tablename__ = "task_list"
+    __tablename__ = "vault"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

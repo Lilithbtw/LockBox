@@ -2,18 +2,304 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LockBox - Signup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockBox - Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cyber-base': '#11111b',
+                        'cyber-surface': '#282a36',
+                        'cyber-elevated': '#313244',
+                        'cyber-primary': '#bd93f9',
+                        'cyber-secondary': '#b4befe',
+                        'cyber-text': '#cdd6f4',
+                        'cyber-muted': '#6c7086',
+                        'cyber-success': '#50fa7b',
+                        'cyber-warning': '#f1fa8c',
+                        'cyber-danger': '#ff5555',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(40, 42, 54, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(189, 147, 249, 0.2);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.3);
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(189, 147, 249, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(189, 147, 249, 0.6); }
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        .password-strength-bar {
+            height: 4px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+    </style>
 </head>
-<body>
-    <h1>Signup</h1>
-    <form id="signupForm" method="post">
-        <label>Username:</label><input name="username" required><br>
-        <label>Password:</label><input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Create Account">
-    </form>
-    <a href="/login">Already have an account?</a>
+<body class="bg-cyber-base min-h-screen flex items-center justify-center p-4">
+    <!-- Background Grid Effect -->
+    <div class="fixed inset-0 opacity-10" style="background-image: linear-gradient(rgba(189, 147, 249, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(189, 147, 249, 0.1) 1px, transparent 1px); background-size: 32px 32px;"></div>
+    
+    <div class="relative z-10 w-full max-w-md">
+        <!-- Logo/Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyber-primary to-cyber-secondary mb-4 animate-pulse-glow">
+                <svg class="w-8 h-8 text-cyber-base" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-cyber-text mb-2">Create Your Vault</h1>
+            <p class="text-cyber-muted text-sm">Join the zero-knowledge password manager</p>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="glass-card rounded-2xl p-8 shadow-2xl">
+            <!-- Security Notice -->
+            <div class="bg-cyber-warning/10 border border-cyber-warning/30 rounded-xl p-4 mb-6">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 text-cyber-warning flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-cyber-warning mb-1">Critical: Master Password</p>
+                        <p class="text-xs text-cyber-muted">This password is NOT recoverable. Write it down somewhere safe.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            {% if error %}
+            <div class="bg-cyber-danger/10 border border-cyber-danger/30 rounded-xl p-4 mb-6 flex items-start gap-3">
+                <svg class="w-5 h-5 text-cyber-danger flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+                <p class="text-sm text-cyber-danger">{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <form id="signupForm" method="post" class="space-y-6">
+                <!-- Username Input -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-cyber-secondary mb-2">
+                        Username
+                    </label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="username"
+                        required
+                        class="input-glow w-full px-4 py-3 bg-cyber-elevated border border-cyber-muted/30 rounded-xl text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all duration-200"
+                        placeholder="Choose a unique username"
+                        autocomplete="username"
+                    >
+                </div>
+
+                <!-- Password Input with Strength Meter -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-cyber-secondary mb-2">
+                        Master Password
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            name="password" 
+                            id="password"
+                            required
+                            oninput="checkPasswordStrength()"
+                            class="input-glow w-full px-4 py-3 bg-cyber-elevated border border-cyber-muted/30 rounded-xl text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all duration-200"
+                            placeholder="Create a strong master password"
+                            autocomplete="new-password"
+                        >
+                        <button 
+                            type="button"
+                            onclick="togglePasswordVisibility()"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-cyber-muted hover:text-cyber-secondary transition-colors"
+                            aria-label="Toggle password visibility"
+                        >
+                            <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Password Strength Indicator -->
+                    <div class="mt-2">
+                        <div class="flex gap-1 mb-1">
+                            <div id="strength-bar-1" class="password-strength-bar flex-1 bg-cyber-muted/20"></div>
+                            <div id="strength-bar-2" class="password-strength-bar flex-1 bg-cyber-muted/20"></div>
+                            <div id="strength-bar-3" class="password-strength-bar flex-1 bg-cyber-muted/20"></div>
+                            <div id="strength-bar-4" class="password-strength-bar flex-1 bg-cyber-muted/20"></div>
+                        </div>
+                        <p id="strength-text" class="text-xs text-cyber-muted">Strength: Not set</p>
+                    </div>
+
+                    <!-- Password Requirements -->
+                    <ul class="mt-3 space-y-1 text-xs text-cyber-muted">
+                        <li class="flex items-center gap-2">
+                            <svg id="check-length" class="w-4 h-4 opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            At least 8 characters
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <svg id="check-variety" class="w-4 h-4 opacity-30" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            Mix of letters, numbers & symbols
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Submit Button -->
+                <button 
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-cyber-primary to-cyber-secondary text-cyber-base font-semibold py-3 px-6 rounded-xl hover:shadow-lg hover:shadow-cyber-primary/30 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                >
+                    Create Secure Vault
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-cyber-muted/20"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-2 bg-cyber-surface text-cyber-muted">Already secured?</span>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <a 
+                href="/login" 
+                class="block text-center py-3 px-6 border border-cyber-primary/30 text-cyber-secondary rounded-xl hover:bg-cyber-primary/10 hover:border-cyber-primary transition-all duration-200"
+            >
+                Access Existing Vault
+            </a>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="mt-6 text-center">
+            <p class="text-xs text-cyber-muted">
+                🔒 Military-grade AES-256 encryption • 🚫 Zero data collection
+            </p>
+        </div>
+    </div>
 
     <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                `;
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const bars = [
+                document.getElementById('strength-bar-1'),
+                document.getElementById('strength-bar-2'),
+                document.getElementById('strength-bar-3'),
+                document.getElementById('strength-bar-4')
+            ];
+            const strengthText = document.getElementById('strength-text');
+            const checkLength = document.getElementById('check-length');
+            const checkVariety = document.getElementById('check-variety');
+
+            // Reset bars
+            bars.forEach(bar => {
+                bar.style.backgroundColor = 'rgba(108, 112, 134, 0.2)';
+            });
+
+            if (password.length === 0) {
+                strengthText.textContent = 'Strength: Not set';
+                strengthText.className = 'text-xs text-cyber-muted';
+                checkLength.style.opacity = '0.3';
+                checkVariety.style.opacity = '0.3';
+                return;
+            }
+
+            let strength = 0;
+            
+            // Length check
+            if (password.length >= 8) {
+                strength++;
+                checkLength.style.opacity = '1';
+                checkLength.style.color = '#50fa7b';
+            } else {
+                checkLength.style.opacity = '0.3';
+            }
+            
+            // Variety checks
+            const hasLower = /[a-z]/.test(password);
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[^a-zA-Z0-9]/.test(password);
+            
+            const varietyCount = [hasLower, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+            
+            if (varietyCount >= 3) {
+                strength += 2;
+                checkVariety.style.opacity = '1';
+                checkVariety.style.color = '#50fa7b';
+            } else if (varietyCount >= 2) {
+                strength++;
+                checkVariety.style.opacity = '0.6';
+            } else {
+                checkVariety.style.opacity = '0.3';
+            }
+
+            if (password.length >= 12) strength++;
+
+            // Update UI based on strength
+            const colors = ['#ff5555', '#f1fa8c', '#50fa7b', '#bd93f9'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+            
+            // ✅ FIX: Ensure strength index is at least 0
+            const strengthIndex = Math.max(0, Math.min(strength - 1, 3));
+            
+            for (let i = 0; i < Math.min(strength, 4); i++) {
+                bars[i].style.backgroundColor = colors[strengthIndex];
+            }
+
+            strengthText.textContent = `Strength: ${labels[strengthIndex]}`;
+            strengthText.className = `text-xs font-medium`;
+            strengthText.style.color = colors[strengthIndex];
+        }
+
         document.getElementById('signupForm').onsubmit = function() {
             const masterPassword = document.getElementById('password').value;
             sessionStorage.setItem("master_key", masterPassword);
