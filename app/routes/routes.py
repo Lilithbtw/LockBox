@@ -13,10 +13,9 @@ routes = [
     Route("/", homepage),
     Route("/add", add_task, methods=["POST"]),
     Route("/delete/{index:int}", delete_task),
+    
     Route("/login", login_page),
-
-    Route("/signup", signup_page),
-    Route("/signup", signup, methods=["POST"]),
+    Route("/login", login, methods=["POST"]),
 
     Route("/logout", logout),
 
@@ -31,4 +30,5 @@ routes = [
 ]
 
 if onboarding != None:
-    routes.append(Route("/login", login, methods=["POST"]))
+    routes.append(Route("/signup", signup, methods=["POST"]))
+    routes.append(Route("/signup", signup_page))
