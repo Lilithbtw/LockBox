@@ -1,7 +1,7 @@
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.exceptions import HTTPException
-from starlette.responses import RedirectResponse, HTMLResponse
+from starlette.responses import RedirectResponse, HTMLResponse, JSONResponse
 from sqlalchemy import select, delete
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -125,6 +125,21 @@ async def delete_task(request: Request):
         await session.commit()
 
     return RedirectResponse("/", status_code=303)
+
+async def delete_all_passwords(request: Request):
+    """Delete all passwords for the current user"""
+    current_user_id = request.session.get("user_id")
+
+    if not current_user_id:
+        return JSONResponse({"error": "Unauthorized"}, status_code=401)
+
+    async with AsyncSessionLocal() as session:
+        stmt = delete(To_Do).where(To_Do.user_id == current_user_id)
+        result = await session.execute(stmt)
+        await session.commit()
+        deleted_count = result.rowcount
+
+    return JSONResponse({"success": True, "deleted": deleted_count}, status_code=200)
 
 async def edit(request: Request):
     task_id = int(request.path_params["index"])

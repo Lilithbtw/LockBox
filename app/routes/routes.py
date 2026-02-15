@@ -13,6 +13,7 @@ routes = [
     Route("/", homepage),
     Route("/add", add_task, methods=["POST"]),
     Route("/delete/{index:int}", delete_task),
+    Route("/delete-all", delete_all_passwords, methods=["POST"]),
     
     Route("/login", login_page),
     Route("/login", login, methods=["POST"]),

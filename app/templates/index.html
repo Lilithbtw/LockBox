@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LockBox - Your Encrypted Vault</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -117,6 +118,17 @@
                         <span>Export</span>
                     </button>
 
+                    <button 
+                        onclick="showDeleteAllModal()"
+                        class="hidden sm:flex items-center gap-2 px-4 py-2 bg-cyber-danger/20 border border-cyber-danger/30 text-cyber-danger rounded-lg hover:bg-cyber-danger/30 transition-all text-sm"
+                        title="Delete all passwords"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        <span>Delete All</span>
+                    </button>
+
                     <a 
                         href="/logout" 
                         onclick="sessionStorage.clear();"
@@ -136,8 +148,34 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header Section -->
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-cyber-text mb-2">Encrypted Vault</h2>
-            <p class="text-cyber-muted text-sm">All credentials are encrypted with your master password</p>
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-cyber-text mb-2">Encrypted Vault</h2>
+                    <p class="text-cyber-muted text-sm">All credentials are encrypted with your master password</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button 
+                        onclick="showCacheInfo()"
+                        class="hidden sm:flex items-center gap-2 px-3 py-2 bg-cyber-elevated border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-primary/10 hover:border-cyber-primary transition-all text-xs"
+                        title="Cache information"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span id="cacheIndicator">Cache: Active</span>
+                    </button>
+                    <button 
+                        onclick="clearCacheAndReload()"
+                        class="hidden sm:flex items-center gap-2 px-3 py-2 bg-cyber-warning/20 border border-cyber-warning/30 text-cyber-warning rounded-lg hover:bg-cyber-warning/30 transition-all text-xs"
+                        title="Clear cached labels"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Clear Cache
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Add/Edit Form -->
@@ -269,7 +307,7 @@
                                 <svg class="w-4 h-4 text-cyber-primary" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
                                 </svg>
-                                <span class="display-label font-semibold text-cyber-text">Locked Entry</span>
+                                <span class="display-label font-semibold text-cyber-text">Encrypted Entry</span>
                             </div>
                             <p class="text-xs text-cyber-muted">Click unlock to view credentials</p>
                         </div>
@@ -333,12 +371,108 @@
     </div>
 
     <!-- Toast Notification (Hidden by default) -->
-    <div id="toast" class="fixed bottom-4 right-4 glass-card rounded-lg px-6 py-3 shadow-xl hidden animate-slide-in">
+    <div id="toast" class="fixed bottom-4 right-4 glass-card rounded-lg px-6 py-3 shadow-xl hidden animate-slide-in z-50">
         <div class="flex items-center gap-3">
             <svg class="w-5 h-5 text-cyber-success" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
             </svg>
             <span id="toast-message" class="text-cyber-text font-medium"></span>
+        </div>
+    </div>
+
+    <!-- Loading Progress Modal (for initial page load) -->
+    <div id="loadingModal" class="fixed inset-0 bg-cyber-base/95 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card rounded-2xl p-8 max-w-md w-full animate-slide-in">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyber-primary/20 border border-cyber-primary/30 mb-4">
+                    <svg class="w-8 h-8 text-cyber-primary animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-cyber-text mb-2">Decrypting Vault</h3>
+                <p class="text-cyber-muted text-sm">Loading your encrypted credentials...</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-cyber-text font-medium">Progress</span>
+                        <span id="loadingProgress" class="text-cyber-primary font-mono">0 / 0</span>
+                    </div>
+                    <div class="w-full bg-cyber-elevated rounded-full h-3 overflow-hidden">
+                        <div id="loadingProgressBar" class="bg-gradient-to-r from-cyber-primary to-cyber-secondary h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="loadingStatus" class="text-center text-sm text-cyber-muted">
+                    Preparing to decrypt...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Progress Modal -->
+    <div id="importModal" class="fixed inset-0 bg-cyber-base/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card rounded-2xl p-8 max-w-md w-full animate-slide-in">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyber-primary/20 border border-cyber-primary/30 mb-4">
+                    <svg class="w-8 h-8 text-cyber-primary animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-cyber-text mb-2">Importing Passwords</h3>
+                <p class="text-cyber-muted text-sm">Please wait while we encrypt and import your credentials</p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-cyber-text font-medium">Progress</span>
+                        <span id="importProgress" class="text-cyber-primary font-mono">0 / 0</span>
+                    </div>
+                    <div class="w-full bg-cyber-elevated rounded-full h-3 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-cyber-primary to-cyber-secondary h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="importStatus" class="text-center text-sm text-cyber-muted">
+                    Preparing import...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete All Confirmation Modal -->
+    <div id="deleteAllModal" class="fixed inset-0 bg-cyber-base/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="glass-card rounded-2xl p-8 max-w-md w-full animate-slide-in">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyber-danger/20 border border-cyber-danger/30 mb-4">
+                    <svg class="w-8 h-8 text-cyber-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-cyber-danger mb-2">Delete All Passwords?</h3>
+                <p class="text-cyber-muted text-sm">This will permanently delete <span id="deleteAllCount" class="text-cyber-text font-semibold">all</span> passwords from your vault. This action cannot be undone.</p>
+            </div>
+
+            <div class="bg-cyber-danger/10 border border-cyber-danger/30 rounded-xl p-4 mb-6">
+                <p class="text-sm text-cyber-danger text-center">⚠️ Make sure you have exported your vault first!</p>
+            </div>
+
+            <div class="flex gap-3">
+                <button 
+                    onclick="closeDeleteAllModal()"
+                    class="flex-1 px-4 py-2.5 border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-elevated transition-all"
+                >
+                    Cancel
+                </button>
+                <button 
+                    onclick="confirmDeleteAll()"
+                    class="flex-1 bg-cyber-danger/20 hover:bg-cyber-danger/30 text-cyber-danger font-semibold py-2.5 px-4 rounded-lg transition-all border border-cyber-danger/30 hover:border-cyber-danger"
+                >
+                    Delete All
+                </button>
+            </div>
         </div>
     </div>
 
@@ -419,31 +553,186 @@
             }
         }
 
-        // DECRYPT LABELS ON LOAD FOR SEARCH
+        // ==========================================
+        // CACHE SYSTEM FOR DECRYPTED LABELS
+        // ==========================================
+        
+        const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+        const CACHE_KEY_PREFIX = 'lockbox_cache_';
+        
+        // Get cache for current user
+        function getCacheKey() {
+            const userId = '{{ request.session.user_id }}';
+            return CACHE_KEY_PREFIX + userId;
+        }
+        
+        // Save decrypted labels to cache
+        function saveLabelCache(itemId, label, metadata) {
+            try {
+                const cacheKey = getCacheKey();
+                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                cache[itemId] = {
+                    label: label,
+                    metadata: metadata,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(cacheKey, JSON.stringify(cache));
+            } catch (e) {
+                console.warn('Failed to save cache:', e);
+            }
+        }
+        
+        // Load decrypted labels from cache
+        function loadLabelCache(itemId) {
+            try {
+                const cacheKey = getCacheKey();
+                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const cached = cache[itemId];
+                
+                if (!cached) return null;
+                
+                // Check if cache is still valid
+                const age = Date.now() - cached.timestamp;
+                if (age > CACHE_DURATION) {
+                    delete cache[itemId];
+                    localStorage.setItem(cacheKey, JSON.stringify(cache));
+                    return null;
+                }
+                
+                return cached;
+            } catch (e) {
+                console.warn('Failed to load cache:', e);
+                return null;
+            }
+        }
+        
+        // Clear cache for current user
+        function clearLabelCache() {
+            try {
+                const cacheKey = getCacheKey();
+                localStorage.removeItem(cacheKey);
+            } catch (e) {
+                console.warn('Failed to clear cache:', e);
+            }
+        }
+        
+        // Clear cache on logout
+        const originalLogout = document.querySelector('a[href="/logout"]');
+        if (originalLogout) {
+            originalLogout.addEventListener('click', () => {
+                clearLabelCache();
+            });
+        }
+
+        // ==========================================
+        // DECRYPT LABELS WITH CACHE AND PROGRESS
+        // ==========================================
+        
         async function enableSearch() {
             const masterPass = sessionStorage.getItem("master_key");
             if (!masterPass) return;
 
             const items = document.querySelectorAll('.vault-item');
+            if (items.length === 0) return;
+            
+            const loadingModal = document.getElementById('loadingModal');
+            const progressBar = document.getElementById('loadingProgressBar');
+            const progressText = document.getElementById('loadingProgress');
+            const statusText = document.getElementById('loadingStatus');
+            
+            // Check how many items need decryption
+            let needsDecryption = 0;
+            items.forEach(li => {
+                const itemId = li.id.replace('item-', '');
+                const cached = loadLabelCache(itemId);
+                if (!cached) needsDecryption++;
+            });
+            
+            // Show loading modal only if we need to decrypt items
+            if (needsDecryption > 0) {
+                loadingModal.classList.remove('hidden');
+                progressText.textContent = `0 / ${items.length}`;
+                statusText.textContent = 'Decrypting credentials...';
+            }
+            
+            let processed = 0;
+            
+            // Process items with progress tracking
             for (let li of items) {
-                const encName = li.querySelector('.enc-name').value;
-                const encDomain = li.querySelector('.enc-domain').value;
-                const encUser = li.querySelector('.enc-user').value;
-
-                const name = await decrypt(encName, masterPass);
-                const domain = await decrypt(encDomain, masterPass);
-                const user = await decrypt(encUser, masterPass);
-
-                // UI display logic: Name > Domain > User
-                const label = name || domain || user || "Unnamed Entry";
-                li.querySelector('.display-label').innerText = label;
+                const itemId = li.id.replace('item-', '');
+                const displayLabel = li.querySelector('.display-label');
                 
-                // Add hidden metadata for search to find even when locked
-                const metadata = document.createElement('span');
-                metadata.className = 'search-metadata';
-                metadata.style.display = 'none';
-                metadata.textContent = `${name} ${domain} ${user}`;
-                li.appendChild(metadata);
+                // Try to load from cache first
+                const cached = loadLabelCache(itemId);
+                
+                if (cached) {
+                    // Use cached data
+                    displayLabel.innerHTML = cached.label;
+                    
+                    // Add hidden metadata for search
+                    let metadata = li.querySelector('.search-metadata');
+                    if (!metadata) {
+                        metadata = document.createElement('span');
+                        metadata.className = 'search-metadata';
+                        metadata.style.display = 'none';
+                        li.appendChild(metadata);
+                    }
+                    metadata.textContent = cached.metadata;
+                } else {
+                    // Decrypt and cache
+                    const encName = li.querySelector('.enc-name').value;
+                    const encDomain = li.querySelector('.enc-domain').value;
+                    const encUser = li.querySelector('.enc-user').value;
+
+                    const [name, domain, user] = await Promise.all([
+                        decrypt(encName, masterPass),
+                        decrypt(encDomain, masterPass),
+                        decrypt(encUser, masterPass)
+                    ]);
+
+                    // UI display logic: Name > Domain > User
+                    const label = name || domain || user || "Unnamed Entry";
+                    displayLabel.innerHTML = label;
+                    
+                    // Add hidden metadata for search
+                    let metadata = li.querySelector('.search-metadata');
+                    if (!metadata) {
+                        metadata = document.createElement('span');
+                        metadata.className = 'search-metadata';
+                        metadata.style.display = 'none';
+                        li.appendChild(metadata);
+                    }
+                    const metadataText = `${name} ${domain} ${user}`;
+                    metadata.textContent = metadataText;
+                    
+                    // Save to cache
+                    saveLabelCache(itemId, label, metadataText);
+                }
+                
+                processed++;
+                
+                // Update progress
+                if (needsDecryption > 0) {
+                    const progress = (processed / items.length) * 100;
+                    progressBar.style.width = `${progress}%`;
+                    progressText.textContent = `${processed} / ${items.length}`;
+                    
+                    if (processed === items.length) {
+                        statusText.textContent = '✓ Decryption complete!';
+                    }
+                }
+                
+                // Small delay every 10 items to keep UI responsive
+                if (processed % 10 === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+            }
+            
+            // Hide loading modal after completion
+            if (needsDecryption > 0) {
+                setTimeout(() => {
+                    loadingModal.classList.add('hidden');
+                }, 500);
             }
         }
 
@@ -598,37 +887,204 @@
             else alert("Error saving entry.");
         };
 
-        // --- FIREFOX COMPATIBLE IMPORT/EXPORT ---
+        // --- ENHANCED CSV IMPORT WITH PROGRESS BAR ---
+        // --- ENHANCED CSV IMPORT WITH PAPAPARSE ---
         async function handleCSV(input) {
             const file = input.files[0];
             const masterPass = sessionStorage.getItem("master_key");
             if (!file || !masterPass) return;
 
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const text = e.target.result;
-                const rows = text.split(/\r?\n/).filter(line => line.trim() !== "").slice(1); 
+            const modal = document.getElementById('importModal');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('importProgress');
+            const statusText = document.getElementById('importStatus');
 
-                for (let row of rows) {
-                    const regex = /(".*?"|[^",\s]+)(?=\s*,|\s*$)/g;
-                    const matches = row.match(regex);
-                    if (!matches || matches.length < 3) continue;
-                    const clean = matches.map(val => val.replace(/^"|"$/g, ''));
+            modal.classList.remove('hidden');
+            statusText.textContent = 'Parsing CSV file...';
 
-                    if (clean[0].includes('chrome://FirefoxAccounts')) continue;
+            // Use PapaParse to parse the CSV
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: async (results) => {
+                    console.log('=== CSV IMPORT DEBUG (PapaParse) ===');
+                    console.log('Headers detected:', results.meta.fields);
+                    console.log('Total rows:', results.data.length);
+                    console.log('First 3 rows:', results.data.slice(0, 3));
 
-                    const payload = {
-                        name: await encrypt(clean[0], masterPass), 
-                        domain: await encrypt(clean[0], masterPass),
-                        domain_usr: await encrypt(clean[1], masterPass),
-                        domain_pass: await encrypt(clean[2], masterPass)
-                    };
-                    await fetch("/add", { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    const rows = results.data;
+                    const headers = results.meta.fields;
+
+                    if (rows.length === 0) {
+                        statusText.textContent = 'Error: CSV file is empty';
+                        setTimeout(() => modal.classList.add('hidden'), 2000);
+                        return;
+                    }
+
+                    // Find column names (case-insensitive)
+                    const headerMap = {};
+                    headers.forEach(h => {
+                        const lower = h.toLowerCase().trim();
+                        headerMap[lower] = h;
+                    });
+
+                    // Find the actual column names in the CSV
+                    const nameCol = Object.keys(headerMap).find(h => 
+                        h.includes('name') || h.includes('title')
+                    );
+                    const uriCol = Object.keys(headerMap).find(h => 
+                        h.includes('uri') || h.includes('url') || h.includes('domain') || 
+                        h.includes('website') || h.includes('login_uri')
+                    );
+                    const usernameCol = Object.keys(headerMap).find(h => 
+                        h.includes('username') || h.includes('user') || h.includes('login')
+                    );
+                    const passwordCol = Object.keys(headerMap).find(h => 
+                        h.includes('password') || h.includes('pass')
+                    );
+
+                    console.log('Column mapping:', {
+                        name: nameCol ? headerMap[nameCol] : 'NOT FOUND',
+                        uri: uriCol ? headerMap[uriCol] : 'NOT FOUND',
+                        username: usernameCol ? headerMap[usernameCol] : 'NOT FOUND',
+                        password: passwordCol ? headerMap[passwordCol] : 'NOT FOUND'
+                    });
+
+                    if (!usernameCol || !passwordCol) {
+                        statusText.textContent = 'Error: CSV must contain username and password columns';
+                        console.error('Missing required columns. Available headers:', headers);
+                        setTimeout(() => modal.classList.add('hidden'), 3000);
+                        return;
+                    }
+
+                    const total = rows.length;
+                    let imported = 0;
+                    let failed = 0;
+                    let skipped = 0;
+
+                    progressText.textContent = `0 / ${total}`;
+                    statusText.textContent = 'Starting import...';
+
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+
+                        // Extract data using actual column names
+                        const name = nameCol ? (row[headerMap[nameCol]] || '').trim() : '';
+                        const uri = uriCol ? (row[headerMap[uriCol]] || '').trim() : '';
+                        const username = usernameCol ? (row[headerMap[usernameCol]] || '').trim() : '';
+                        const password = passwordCol ? (row[headerMap[passwordCol]] || '').trim() : '';
+
+                        // Debug first 3 rows
+                        if (i < 3) {
+                            console.log(`\nRow ${i + 1}:`, row);
+                            console.log(`Row ${i + 1} extracted:`, {
+                                name: name || '(empty)',
+                                uri: uri || '(empty)',
+                                username: username || '(empty)',
+                                password: password ? '***' + password.slice(-3) : '(empty)'
+                            });
+                        }
+
+                        // Skip rows without password (password is required)
+                        if (!password) {
+                            if (i < 3) console.log(`Skipping row ${i + 1}: missing password`);
+                            skipped++;
+                            
+                            // Update progress
+                            const progress = ((i + 1) / total) * 100;
+                            progressBar.style.width = `${progress}%`;
+                            progressText.textContent = `${i + 1} / ${total}`;
+                            continue;
+                        }
+
+                        // Skip Firefox/Chrome internal accounts
+                        if (uri.includes('chrome://')) {
+                            if (i < 3) console.log(`Skipping row ${i + 1}: internal browser account`);
+                            skipped++;
+                            
+                            // Update progress
+                            const progress = ((i + 1) / total) * 100;
+                            progressBar.style.width = `${progress}%`;
+                            progressText.textContent = `${i + 1} / ${total}`;
+                            continue;
+                        }
+
+                        // Use name if available, otherwise use URI, otherwise use "No Name"
+                        const displayName = name || uri || "Unnamed Entry";
+                        const domain = uri || displayName;
+                        
+                        // Use username if available, otherwise use domain or name as fallback
+                        const finalUsername = username || domain || displayName;
+
+                        if (i < 3) {
+                            console.log(`Row ${i + 1} final values:`, {
+                                displayName,
+                                domain,
+                                finalUsername,
+                                password: '***'
+                            });
+                        }
+
+                        try {
+                            const payload = {
+                                name: await encrypt(displayName, masterPass),
+                                domain: await encrypt(domain, masterPass),
+                                domain_usr: await encrypt(finalUsername, masterPass),
+                                domain_pass: await encrypt(password, masterPass)
+                            };
+
+                            const response = await fetch("/add", {
+                                method: "POST",
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+
+                            if (response.ok) {
+                                imported++;
+                                if (i < 3) console.log(`Row ${i + 1}: Import successful`);
+                            } else {
+                                const errorText = await response.text();
+                                console.error(`Row ${i + 1}: Import failed -`, errorText);
+                                failed++;
+                            }
+                        } catch (e) {
+                            console.error(`Row ${i + 1}: Exception -`, e);
+                            failed++;
+                        }
+
+                        // Update progress
+                        const progress = ((i + 1) / total) * 100;
+                        progressBar.style.width = `${progress}%`;
+                        progressText.textContent = `${i + 1} / ${total}`;
+                        statusText.textContent = `Imported ${imported} passwords...`;
+
+                        // Small delay to allow UI updates
+                        if (i % 5 === 0) {
+                            await new Promise(resolve => setTimeout(resolve, 50));
+                        }
+                    }
+
+                    const summary = `✓ Complete! Imported ${imported}${failed > 0 ? `, ${failed} failed` : ''}${skipped > 0 ? `, ${skipped} skipped` : ''}`;
+                    statusText.textContent = summary;
+                    progressBar.style.width = '100%';
+                    
+                    console.log('=== IMPORT SUMMARY ===');
+                    console.log({ imported, failed, skipped, total });
+                    
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        showToast(`Successfully imported ${imported} passwords!`);
+                        setTimeout(() => window.location.reload(), 1000);
+                    }, 1500);
+                },
+                error: (error) => {
+                    console.error('PapaParse error:', error);
+                    statusText.textContent = 'Error parsing CSV file';
+                    setTimeout(() => modal.classList.add('hidden'), 2000);
                 }
-                showToast('Import complete! Reloading...');
-                setTimeout(() => window.location.reload(), 1500);
-            };
-            reader.readAsText(file);
+            });
+
+            input.value = ''; // Reset file input
         }
 
         async function exportCSV() {
@@ -672,8 +1128,100 @@
             showToast('Export successful!');
         }
 
-        // Run background decryption on load
-        window.addEventListener('load', enableSearch);
+        // --- CACHE MANAGEMENT FUNCTIONS ---
+        function showCacheInfo() {
+            try {
+                const cacheKey = getCacheKey();
+                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const cacheSize = Object.keys(cache).length;
+                const oldestEntry = Object.values(cache).reduce((oldest, entry) => {
+                    return !oldest || entry.timestamp < oldest.timestamp ? entry : oldest;
+                }, null);
+                
+                let message = `Cache contains ${cacheSize} decrypted label(s).\n\n`;
+                
+                if (oldestEntry) {
+                    const age = Date.now() - oldestEntry.timestamp;
+                    const minutes = Math.floor(age / 60000);
+                    const remaining = Math.floor((CACHE_DURATION - age) / 60000);
+                    message += `Oldest entry: ${minutes} minute(s) ago\n`;
+                    message += `Cache expires in: ${remaining} minute(s)\n\n`;
+                }
+                
+                message += `Cache duration: 30 minutes\n`;
+                message += `This speeds up vault loading on subsequent visits.`;
+                
+                alert(message);
+            } catch (e) {
+                alert('No cache data found.');
+            }
+        }
+        
+        function clearCacheAndReload() {
+            if (confirm('Clear all cached labels? They will be re-decrypted on next load.')) {
+                clearLabelCache();
+                showToast('Cache cleared! Reloading...');
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        }
+        
+        // Update cache indicator on load
+        function updateCacheIndicator() {
+            try {
+                const cacheKey = getCacheKey();
+                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const cacheSize = Object.keys(cache).length;
+                const indicator = document.getElementById('cacheIndicator');
+                if (indicator) {
+                    indicator.textContent = cacheSize > 0 ? `Cache: ${cacheSize} items` : 'Cache: Empty';
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+
+        // --- DELETE ALL FUNCTIONALITY ---
+        function showDeleteAllModal() {
+            const items = document.querySelectorAll('.vault-item');
+            document.getElementById('deleteAllCount').textContent = items.length;
+            document.getElementById('deleteAllModal').classList.remove('hidden');
+        }
+
+        function closeDeleteAllModal() {
+            document.getElementById('deleteAllModal').classList.add('hidden');
+        }
+
+        async function confirmDeleteAll() {
+            const items = document.querySelectorAll('.vault-item');
+            const modal = document.getElementById('deleteAllModal');
+            
+            modal.classList.add('hidden');
+            
+            let deleted = 0;
+            for (let li of items) {
+                const itemId = li.id.replace('item-', '');
+                try {
+                    const response = await fetch(`/delete/${itemId}`);
+                    if (response.ok) deleted++;
+                } catch (e) {
+                    console.error('Failed to delete item:', e);
+                }
+            }
+
+            showToast(`Deleted ${deleted} passwords`);
+            setTimeout(() => window.location.reload(), 1000);
+        }
+
+        // Run background decryption immediately when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', async () => {
+                await enableSearch();
+                updateCacheIndicator();
+            });
+        } else {
+            // DOM already loaded, run immediately
+            enableSearch().then(() => updateCacheIndicator());
+        }
     </script>
 </body>
 </html>
