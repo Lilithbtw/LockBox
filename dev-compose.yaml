@@ -29,12 +29,19 @@ services:
         condition: service_healthy
     networks:
       - backend
-frontend:
+  frontend:
     build: 
       context: .
       dockerfile: Dockerfile
     networks:
       - backend
+    ports:
+      - 80:8000
+    environment:
+      DB_USER: lockbox_usr
+      DB_PASS: secret-pass
+      DB_NAME: lockboxdb
+      DB_HOST: db
 networks:
   backend:
     driver: bridge
