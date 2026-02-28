@@ -17,7 +17,6 @@ services:
       retries: 10
     networks:
       - backend
-
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin
@@ -30,6 +29,9 @@ services:
         condition: service_healthy
     networks:
       - backend
+  frontend:
+    image: lilithbtw/lockbox_web
+    build: ./Dockerfile
 
 networks:
   backend:
