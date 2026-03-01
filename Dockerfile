@@ -1,5 +1,5 @@
 # Build dependencies
-FROM python:3.14-alpine3.21 AS builder
+FROM python:3.12-alpine3.21 AS builder
 WORKDIR /build
 RUN apk add --no-cache build-base gcc musl-dev libffi-dev
 COPY requirements.txt .
