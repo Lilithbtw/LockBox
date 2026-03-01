@@ -4,10 +4,10 @@ services:
     container_name: lockbox-db
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: {DB_ROOT_PASS}
-      MARIADB_USER: {DB_USER}
-      MARIADB_PASSWORD: {DB_PASS}
-      MARIADB_DATABASE: {DB_NAME}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASS}
+      MARIADB_DATABASE: ${DB_NAME}
     ports:
       - 3306:3306
     healthcheck:
@@ -38,10 +38,10 @@ services:
     ports:
       - 5555:8000
     environment:
-      DB_USER: {DB_USER}
-      DB_PASS: {DB_PASS}
-      DB_NAME: {DB_NAME}
-      DB_HOST: {DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
 networks:
   backend:
     driver: bridge
