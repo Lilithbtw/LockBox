@@ -36,7 +36,7 @@ services:
     networks:
       - backend
     ports:
-      - 8080:8000
+      - 5555:8000
     environment:
       DB_USER: lockbox_usr
       DB_PASS: secret-pass
