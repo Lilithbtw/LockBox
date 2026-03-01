@@ -3,13 +3,12 @@ services:
     image: mariadb:latest
     container_name: lockbox-db
     restart: always
+    command: --innodb-buffer-pool-size=128M --max-connections=20
     environment:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASS}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASS}
       MARIADB_DATABASE: ${DB_NAME}
-    ports:
-      - 3306:3306
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 5s
@@ -22,8 +21,6 @@ services:
     container_name: phpmyadmin
     environment:
       PMA_HOST: db
-    ports:
-      - "9000:80"
     depends_on:
       db:
         condition: service_healthy
@@ -35,8 +32,6 @@ services:
       dockerfile: Dockerfile
     networks:
       - backend
-    ports:
-      - 5555:8000
     environment:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
