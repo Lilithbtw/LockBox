@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from argon2 import PasswordHasher, exceptions
 
-from .models import *
+from .models import User
 
 ph = PasswordHasher()
 def hash_password(password: str) -> str:

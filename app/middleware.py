@@ -2,13 +2,14 @@ from starlette.middleware import Middleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-import secrets
 import os
 from dotenv import load_dotenv
 
-load_dotenv("../.env")
+load_dotenv()
 
-SESSION_SECRET = secrets.token_urlsafe(32)
+SESSION_SECRET = os.getenv("SESSION_SECRET")
+if not SESSION_SECRET:
+    raise RuntimeError("SESSION_SECRET environment variable is not set.")
 
 middleware = [
     Middleware(GZipMiddleware, minimum_size=1000, compresslevel=9),
