@@ -5,7 +5,7 @@ import os
 from app.routes.routes import routes
 from app.middleware import middleware
 from app.routes.views import not_found
-from app.database import engine, Base, create_db_if_not_exists
+from app.database import engine, Base, create_db_if_not_exists, check_if_db_exists
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,10 +17,11 @@ async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False
 @asynccontextmanager
 async def lifespan(app):
     try:
-        await create_db_if_not_exists()
+        if not check_if_db_exists():
+            await create_db_if_not_exists()
+
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-
         async with async_session() as session:
             result = await session.execute(select(func.count(User.id)))
             user_count = result.scalar()

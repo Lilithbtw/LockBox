@@ -18,10 +18,10 @@ SERVER_URL = f"mysql+asyncmy://{USER}:{PASSWORD}@{HOST}:{PORT}"
 DATABASE_URL = f"{SERVER_URL}/{DB_NAME}"
 
 async def create_db_if_not_exists():
-    temp_engine = create_async_engine(SERVER_URL)
     retries = 10
     while retries > 0:
         try:
+            temp_engine = create_async_engine(SERVER_URL)
             async with temp_engine.connect() as conn:
                 await conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}"))
                 await conn.commit()
@@ -32,6 +32,21 @@ async def create_db_if_not_exists():
             if retries == 0:
                 raise e
             await asyncio.sleep(3)
+
+async def check_if_db_exists():
+    try:
+        temp_engine = create_async_engine(SERVER_URL)
+        async with temp_engine.connect() as conn:
+            result = await conn.execute(text(f"SHOW DATABASES LIKE {DB_NAME};"))
+        await temp_engine.dispose()
+        
+        if result == {DB_NAME}:
+            return True
+        else:
+            return False
+        
+    except (OperationalError,Exception) as e:
+        print(f"Database not ready... (Error: {e}")
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 
