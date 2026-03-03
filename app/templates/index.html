@@ -34,9 +34,7 @@
         }
     </script>
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         .glass-card {
             background: rgba(40, 42, 54, 0.7);
             backdrop-filter: blur(12px);
@@ -47,19 +45,13 @@
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(189, 147, 249, 0.15);
         }
-        .input-glow:focus {
-            box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.3);
-        }
+        .input-glow:focus { box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.3); }
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        .vault-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .animate-slide-in { animation: slideIn 0.3s ease-out; }
+        .vault-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .vault-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(189, 147, 249, 0.2);
@@ -74,7 +66,6 @@
     <nav class="glass-nav sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <!-- Logo & Title -->
                 <div class="flex items-center gap-3">
                     <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyber-primary to-cyber-secondary">
                         <svg class="w-5 h-5 text-cyber-base" fill="currentColor" viewBox="0 0 20 20">
@@ -87,7 +78,6 @@
                     </div>
                 </div>
 
-                <!-- Actions -->
                 <div class="flex items-center gap-4">
                     {% if request.session.user_id == 1 %}
                         <a href="/admin" class="flex items-center gap-2 px-4 py-2 bg-cyber-primary/20 border border-cyber-primary/30 text-cyber-primary rounded-lg hover:bg-cyber-primary/30 transition-all text-sm">
@@ -96,8 +86,9 @@
                     {% endif %}
 
                     <input type="file" id="csvUpload" accept=".csv" style="display:none;" onchange="handleCSV(this)">
-                    
-                    <button 
+
+                    <button
+                        type="button"
                         onclick="document.getElementById('csvUpload').click()"
                         class="hidden sm:flex items-center gap-2 px-4 py-2 bg-cyber-elevated border border-cyber-muted/30 text-cyber-secondary rounded-lg hover:bg-cyber-primary/10 hover:border-cyber-primary transition-all text-sm"
                         title="Import passwords from CSV">
@@ -107,33 +98,32 @@
                         <span>Import</span>
                     </button>
 
-                    <button 
+                    <button
+                        type="button"
                         onclick="exportCSV()"
                         class="hidden sm:flex items-center gap-2 px-4 py-2 bg-cyber-elevated border border-cyber-muted/30 text-cyber-secondary rounded-lg hover:bg-cyber-primary/10 hover:border-cyber-primary transition-all text-sm"
-                        title="Export vault to CSV"
-                    >
+                        title="Export vault to CSV">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
                         </svg>
                         <span>Export</span>
                     </button>
 
-                    <button 
+                    <button
+                        type="button"
                         onclick="showDeleteAllModal()"
                         class="hidden sm:flex items-center gap-2 px-4 py-2 bg-cyber-danger/20 border border-cyber-danger/30 text-cyber-danger rounded-lg hover:bg-cyber-danger/30 transition-all text-sm"
-                        title="Delete all passwords"
-                    >
+                        title="Delete all passwords">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
                         <span>Delete All</span>
                     </button>
 
-                    <a 
-                        href="/logout" 
-                        onclick="sessionStorage.clear();"
-                        class="flex items-center gap-2 px-4 py-2 bg-cyber-danger/20 border border-cyber-danger/30 text-cyber-danger rounded-lg hover:bg-cyber-danger/30 transition-all text-sm"
-                    >
+                    <a
+                        href="/logout"
+                        onclick="clearLabelCache();"
+                        class="flex items-center gap-2 px-4 py-2 bg-cyber-danger/20 border border-cyber-danger/30 text-cyber-danger rounded-lg hover:bg-cyber-danger/30 transition-all text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
@@ -146,7 +136,6 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header Section -->
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
@@ -154,21 +143,21 @@
                     <p class="text-cyber-muted text-sm">All credentials are encrypted with your master password</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button 
+                    <button
+                        type="button"
                         onclick="showCacheInfo()"
                         class="hidden sm:flex items-center gap-2 px-3 py-2 bg-cyber-elevated border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-primary/10 hover:border-cyber-primary transition-all text-xs"
-                        title="Cache information"
-                    >
+                        title="Cache information">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <span id="cacheIndicator">Cache: Active</span>
                     </button>
-                    <button 
+                    <button
+                        type="button"
                         onclick="clearCacheAndReload()"
                         class="hidden sm:flex items-center gap-2 px-3 py-2 bg-cyber-warning/20 border border-cyber-warning/30 text-cyber-warning rounded-lg hover:bg-cyber-warning/30 transition-all text-xs"
-                        title="Clear cached labels"
-                    >
+                        title="Clear cached labels">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                         </svg>
@@ -182,77 +171,39 @@
         <div class="glass-card rounded-2xl p-6 mb-8 animate-slide-in">
             <form id="vaultForm" class="space-y-4">
                 <input type="hidden" id="edit_id" value="">
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Name Field -->
                     <div>
                         <label for="form_name" class="block text-sm font-medium text-cyber-secondary mb-2">
                             Entry Name <span class="text-cyber-muted text-xs">(optional)</span>
                         </label>
-                        <input 
-                            type="text" 
-                            id="form_name" 
-                            name="name" 
-                            placeholder="e.g., Work Email, GitHub Account"
-                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all"
-                        >
+                        <input type="text" id="form_name" name="name" placeholder="e.g., Work Email, GitHub Account"
+                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all">
                     </div>
-
-                    <!-- Domain Field -->
                     <div>
                         <label for="form_domain" class="block text-sm font-medium text-cyber-secondary mb-2">
                             Domain <span class="text-cyber-danger text-xs">*</span>
                         </label>
-                        <input 
-                            type="text" 
-                            id="form_domain" 
-                            name="domain" 
-                            placeholder="github.com"
-                            required
-                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all"
-                        >
+                        <input type="text" id="form_domain" name="domain" placeholder="github.com" required
+                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all">
                     </div>
-
-                    <!-- Username Field -->
                     <div>
                         <label for="form_username" class="block text-sm font-medium text-cyber-secondary mb-2">
                             Username <span class="text-cyber-danger text-xs">*</span>
                         </label>
-                        <input 
-                            type="text" 
-                            id="form_username" 
-                            name="username" 
-                            placeholder="your.email@example.com"
-                            required
-                            autocomplete="off"
-                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all"
-                        >
+                        <input type="text" id="form_username" name="username" placeholder="your.email@example.com" required autocomplete="off"
+                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all">
                     </div>
-
-                    <!-- Password Field -->
                     <div>
                         <label for="form_password" class="block text-sm font-medium text-cyber-secondary mb-2">
                             Password <span class="text-cyber-danger text-xs">*</span>
                         </label>
-                        <input 
-                            type="password" 
-                            id="form_password" 
-                            name="password" 
-                            placeholder="••••••••••••"
-                            required
-                            autocomplete="off"
-                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all"
-                        >
+                        <input type="password" id="form_password" name="password" placeholder="••••••••••••" required autocomplete="off"
+                            class="input-glow w-full px-4 py-2.5 bg-cyber-elevated border border-cyber-muted/30 rounded-lg text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all">
                     </div>
                 </div>
-
-                <!-- Action Buttons -->
                 <div class="flex gap-3 pt-2">
-                    <button 
-                        type="submit" 
-                        id="submitBtn"
-                        class="flex-1 bg-gradient-to-r from-cyber-primary to-cyber-secondary text-cyber-base font-semibold py-2.5 px-6 rounded-lg hover:shadow-lg hover:shadow-cyber-primary/30 transition-all transform hover:scale-[1.01] active:scale-[0.99]"
-                    >
+                    <button type="submit" id="submitBtn"
+                        class="flex-1 bg-gradient-to-r from-cyber-primary to-cyber-secondary text-cyber-base font-semibold py-2.5 px-6 rounded-lg hover:shadow-lg hover:shadow-cyber-primary/30 transition-all transform hover:scale-[1.01] active:scale-[0.99]">
                         <span class="flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -260,13 +211,8 @@
                             Add to Vault
                         </span>
                     </button>
-                    <button 
-                        type="button" 
-                        id="cancelBtn" 
-                        style="display:none;" 
-                        onclick="resetForm()"
-                        class="px-6 py-2.5 border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-elevated transition-all"
-                    >
+                    <button type="button" id="cancelBtn" style="display:none;" onclick="resetForm()"
+                        class="px-6 py-2.5 border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-elevated transition-all">
                         Cancel
                     </button>
                 </div>
@@ -279,13 +225,9 @@
                 <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyber-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
-                <input 
-                    type="text" 
-                    id="vaultSearch" 
-                    placeholder="Search your vault by name, domain, or username..." 
+                <input type="text" id="vaultSearch" placeholder="Search your vault by name, domain, or username..."
                     onkeyup="filterVault()"
-                    class="input-glow w-full pl-12 pr-4 py-3 bg-cyber-surface border border-cyber-muted/30 rounded-xl text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all"
-                >
+                    class="input-glow w-full pl-12 pr-4 py-3 bg-cyber-surface border border-cyber-muted/30 rounded-xl text-cyber-text placeholder-cyber-muted/50 focus:outline-none focus:border-cyber-primary transition-all">
             </div>
         </div>
 
@@ -293,13 +235,11 @@
         <div id="vaultList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {% for item in items %}
             <div class="vault-item vault-card glass-card rounded-xl p-5" id="item-{{ item.id }}">
-                <!-- Hidden Encrypted Data -->
                 <input type="hidden" class="enc-name" value='{{ item.name }}'>
                 <input type="hidden" class="enc-domain" value='{{ item.domain }}'>
                 <input type="hidden" class="enc-user" value='{{ item.domain_usr }}'>
                 <input type="hidden" class="enc-pass" value='{{ item.domain_pass }}'>
-                
-                <!-- Locked State (Default) -->
+
                 <div class="entry-container locked-gradient rounded-lg p-4 border border-cyber-primary/20">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex-1">
@@ -312,12 +252,10 @@
                             <p class="text-xs text-cyber-muted">Click unlock to view credentials</p>
                         </div>
                     </div>
-
                     <div class="flex gap-2">
-                        <button 
+                        <button type="button"
                             class="unlock-btn flex-1 bg-cyber-primary/20 hover:bg-cyber-primary/30 text-cyber-primary font-medium py-2 px-3 rounded-lg transition-all text-sm"
-                            onclick="unlockEntry(this)"
-                        >
+                            onclick="unlockEntry(this)">
                             <span class="flex items-center justify-center gap-1">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
@@ -325,25 +263,22 @@
                                 Unlock
                             </span>
                         </button>
-                        <button 
+                        <button type="button"
                             onclick="prepareEdit('{{ item.id }}', this)"
                             class="bg-cyber-elevated hover:bg-cyber-primary/10 text-cyber-secondary font-medium py-2 px-3 rounded-lg transition-all text-sm border border-cyber-muted/30 hover:border-cyber-primary"
-                            title="Edit entry"
-                        >
+                            title="Edit entry">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                         </button>
-                        <a 
-                            href="/delete/{{ item.id }}" 
-                            onclick="return confirm('Are you sure you want to delete this entry? This cannot be undone.')"
+                        <button type="button"
+                            onclick="deleteEntry('{{ item.id }}')"
                             class="bg-cyber-danger/20 hover:bg-cyber-danger/30 text-cyber-danger font-medium py-2 px-3 rounded-lg transition-all text-sm border border-cyber-danger/30 hover:border-cyber-danger"
-                            title="Delete entry"
-                        >
+                            title="Delete entry">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -355,10 +290,9 @@
                     </svg>
                     <h3 class="text-xl font-semibold text-cyber-text mb-2">Your vault is empty</h3>
                     <p class="text-cyber-muted mb-6">Start securing your passwords by adding your first entry above</p>
-                    <button 
+                    <button type="button"
                         onclick="document.getElementById('form_domain').focus()"
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-cyber-primary to-cyber-secondary text-cyber-base font-semibold py-2 px-6 rounded-lg hover:shadow-lg hover:shadow-cyber-primary/30 transition-all"
-                    >
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-cyber-primary to-cyber-secondary text-cyber-base font-semibold py-2 px-6 rounded-lg hover:shadow-lg hover:shadow-cyber-primary/30 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -370,7 +304,7 @@
         </div>
     </div>
 
-    <!-- Toast Notification (Hidden by default) -->
+    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 right-4 glass-card rounded-lg px-6 py-3 shadow-xl hidden animate-slide-in z-50">
         <div class="flex items-center gap-3">
             <svg class="w-5 h-5 text-cyber-success" fill="currentColor" viewBox="0 0 20 20">
@@ -380,7 +314,7 @@
         </div>
     </div>
 
-    <!-- Loading Progress Modal (for initial page load) -->
+    <!-- Loading Progress Modal -->
     <div id="loadingModal" class="fixed inset-0 bg-cyber-base/95 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
         <div class="glass-card rounded-2xl p-8 max-w-md w-full animate-slide-in">
             <div class="text-center mb-6">
@@ -392,7 +326,6 @@
                 <h3 class="text-xl font-bold text-cyber-text mb-2">Decrypting Vault</h3>
                 <p class="text-cyber-muted text-sm">Loading your encrypted credentials...</p>
             </div>
-
             <div class="space-y-4">
                 <div>
                     <div class="flex justify-between text-sm mb-2">
@@ -403,10 +336,7 @@
                         <div id="loadingProgressBar" class="bg-gradient-to-r from-cyber-primary to-cyber-secondary h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
-
-                <div id="loadingStatus" class="text-center text-sm text-cyber-muted">
-                    Preparing to decrypt...
-                </div>
+                <div id="loadingStatus" class="text-center text-sm text-cyber-muted">Preparing to decrypt...</div>
             </div>
         </div>
     </div>
@@ -423,7 +353,6 @@
                 <h3 class="text-xl font-bold text-cyber-text mb-2">Importing Passwords</h3>
                 <p class="text-cyber-muted text-sm">Please wait while we encrypt and import your credentials</p>
             </div>
-
             <div class="space-y-4">
                 <div>
                     <div class="flex justify-between text-sm mb-2">
@@ -434,10 +363,7 @@
                         <div id="progressBar" class="bg-gradient-to-r from-cyber-primary to-cyber-secondary h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
-
-                <div id="importStatus" class="text-center text-sm text-cyber-muted">
-                    Preparing import...
-                </div>
+                <div id="importStatus" class="text-center text-sm text-cyber-muted">Preparing import...</div>
             </div>
         </div>
     </div>
@@ -452,24 +378,18 @@
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-cyber-danger mb-2">Delete All Passwords?</h3>
-                <p class="text-cyber-muted text-sm">This will permanently delete <span id="deleteAllCount" class="text-cyber-text font-semibold">all</span> passwords from your vault. This action cannot be undone.</p>
+                <p class="text-cyber-muted text-sm">This will permanently delete <span id="deleteAllCount" class="text-cyber-text font-semibold">all</span> <span id="deleteAllWord">passwords</span> from your vault. This action cannot be undone.</p>
             </div>
-
             <div class="bg-cyber-danger/10 border border-cyber-danger/30 rounded-xl p-4 mb-6">
                 <p class="text-sm text-cyber-danger text-center">⚠️ Make sure you have exported your vault first!</p>
             </div>
-
             <div class="flex gap-3">
-                <button 
-                    onclick="closeDeleteAllModal()"
-                    class="flex-1 px-4 py-2.5 border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-elevated transition-all"
-                >
+                <button type="button" onclick="closeDeleteAllModal()"
+                    class="flex-1 px-4 py-2.5 border border-cyber-muted/30 text-cyber-muted rounded-lg hover:bg-cyber-elevated transition-all">
                     Cancel
                 </button>
-                <button 
-                    onclick="confirmDeleteAll()"
-                    class="flex-1 bg-cyber-danger/20 hover:bg-cyber-danger/30 text-cyber-danger font-semibold py-2.5 px-4 rounded-lg transition-all border border-cyber-danger/30 hover:border-cyber-danger"
-                >
+                <button type="button" onclick="confirmDeleteAll()"
+                    class="flex-1 bg-cyber-danger/20 hover:bg-cyber-danger/30 text-cyber-danger font-semibold py-2.5 px-4 rounded-lg transition-all border border-cyber-danger/30 hover:border-cyber-danger">
                     Delete All
                 </button>
             </div>
@@ -481,12 +401,12 @@
         const base64ToBuff = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 
         async function getEncryptionKey(masterPassword, salt) {
-            const encoder = new TextEncoder();
+            const enc = new TextEncoder();
             const baseKey = await window.crypto.subtle.importKey(
-                "raw", encoder.encode(masterPassword), "PBKDF2", false, ["deriveKey"]
+                "raw", enc.encode(masterPassword), "PBKDF2", false, ["deriveKey"]
             );
             return window.crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                { name: "PBKDF2", salt, iterations: 100000, hash: "SHA-256" },
                 baseKey,
                 { name: "AES-GCM", length: 256 },
                 false, ["encrypt", "decrypt"]
@@ -498,32 +418,23 @@
             const salt = window.crypto.getRandomValues(new Uint8Array(16));
             const iv = window.crypto.getRandomValues(new Uint8Array(12));
             const key = await getEncryptionKey(masterPassword, salt);
-            const encoded = new TextEncoder().encode(text);
-            const ciphertext = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
-            return JSON.stringify({
-                ct: buffToBase64(ciphertext),
-                iv: buffToBase64(iv),
-                s: buffToBase64(salt)
-            });
+            const ciphertext = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(text));
+            return JSON.stringify({ ct: buffToBase64(ciphertext), iv: buffToBase64(iv), s: buffToBase64(salt) });
         }
 
         async function decrypt(jsonBlob, masterPassword) {
             if (!jsonBlob || jsonBlob === "None" || jsonBlob === "") return "";
             try {
                 const data = JSON.parse(jsonBlob);
-                const salt = base64ToBuff(data.s);
-                const iv = base64ToBuff(data.iv);
-                const ciphertext = base64ToBuff(data.ct);
-                const key = await getEncryptionKey(masterPassword, salt);
-                const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, ciphertext);
+                const key = await getEncryptionKey(masterPassword, base64ToBuff(data.s));
+                const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: base64ToBuff(data.iv) }, key, base64ToBuff(data.ct));
                 return new TextDecoder().decode(decrypted);
             } catch (e) { return ""; }
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
+            document.getElementById('toast-message').textContent = message;
             toast.classList.remove('hidden');
             setTimeout(() => toast.classList.add('hidden'), 3000);
         }
@@ -535,141 +446,80 @@
 
         function togglePassword(btn, pass) {
             const span = btn.parentElement.querySelector('.pass-text');
-            if (span.innerText === "*******") {
-                span.innerText = pass;
-                btn.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
-                    </svg>
-                `;
-            } else {
-                span.innerText = "*******";
-                btn.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                    </svg>
-                `;
-            }
+            const isHidden = span.innerText === "*******";
+            span.innerText = isHidden ? pass : "*******";
+            btn.innerHTML = isHidden
+                ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>`
+                : `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
         }
 
         // ==========================================
-        // CACHE SYSTEM FOR DECRYPTED LABELS
+        // CACHE SYSTEM
         // ==========================================
-        
-        const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+        const CACHE_DURATION = 30 * 60 * 1000;
         const CACHE_KEY_PREFIX = 'lockbox_cache_';
-        
-        // Get cache for current user
+
         function getCacheKey() {
-            const userId = '{{ request.session.user_id }}';
-            return CACHE_KEY_PREFIX + userId;
+            return CACHE_KEY_PREFIX + '{{ request.session.user_id }}';
         }
-        
-        // Save decrypted labels to cache
+
         function saveLabelCache(itemId, label, metadata) {
             try {
-                const cacheKey = getCacheKey();
-                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                cache[itemId] = {
-                    label: label,
-                    metadata: metadata,
-                    timestamp: Date.now()
-                };
-                localStorage.setItem(cacheKey, JSON.stringify(cache));
-            } catch (e) {
-                console.warn('Failed to save cache:', e);
-            }
+                const cache = JSON.parse(localStorage.getItem(getCacheKey()) || '{}');
+                cache[itemId] = { label, metadata, timestamp: Date.now() };
+                localStorage.setItem(getCacheKey(), JSON.stringify(cache));
+            } catch (e) { console.warn('Failed to save cache:', e); }
         }
-        
-        // Load decrypted labels from cache
+
         function loadLabelCache(itemId) {
             try {
-                const cacheKey = getCacheKey();
-                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const cache = JSON.parse(localStorage.getItem(getCacheKey()) || '{}');
                 const cached = cache[itemId];
-                
                 if (!cached) return null;
-                
-                // Check if cache is still valid
-                const age = Date.now() - cached.timestamp;
-                if (age > CACHE_DURATION) {
+                if (Date.now() - cached.timestamp > CACHE_DURATION) {
                     delete cache[itemId];
-                    localStorage.setItem(cacheKey, JSON.stringify(cache));
+                    localStorage.setItem(getCacheKey(), JSON.stringify(cache));
                     return null;
                 }
-                
                 return cached;
-            } catch (e) {
-                console.warn('Failed to load cache:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
-        
-        // Clear cache for current user
+
         function clearLabelCache() {
-            try {
-                const cacheKey = getCacheKey();
-                localStorage.removeItem(cacheKey);
-            } catch (e) {
-                console.warn('Failed to clear cache:', e);
-            }
-        }
-        
-        // Clear cache on logout
-        const originalLogout = document.querySelector('a[href="/logout"]');
-        if (originalLogout) {
-            originalLogout.addEventListener('click', () => {
-                clearLabelCache();
-            });
+            try { localStorage.removeItem(getCacheKey()); } catch (e) {}
         }
 
         // ==========================================
         // DECRYPT LABELS WITH CACHE AND PROGRESS
         // ==========================================
-        
         async function enableSearch() {
             const masterPass = sessionStorage.getItem("master_key");
             if (!masterPass) return;
 
             const items = document.querySelectorAll('.vault-item');
             if (items.length === 0) return;
-            
+
             const loadingModal = document.getElementById('loadingModal');
             const progressBar = document.getElementById('loadingProgressBar');
             const progressText = document.getElementById('loadingProgress');
             const statusText = document.getElementById('loadingStatus');
-            
-            // Check how many items need decryption
-            let needsDecryption = 0;
-            items.forEach(li => {
-                const itemId = li.id.replace('item-', '');
-                const cached = loadLabelCache(itemId);
-                if (!cached) needsDecryption++;
-            });
-            
-            // Show loading modal only if we need to decrypt items
+
+            const needsDecryption = [...items].filter(li => !loadLabelCache(li.id.replace('item-', ''))).length;
+
             if (needsDecryption > 0) {
                 loadingModal.classList.remove('hidden');
                 progressText.textContent = `0 / ${items.length}`;
                 statusText.textContent = 'Decrypting credentials...';
             }
-            
+
             let processed = 0;
-            
-            // Process items with progress tracking
             for (let li of items) {
                 const itemId = li.id.replace('item-', '');
                 const displayLabel = li.querySelector('.display-label');
-                
-                // Try to load from cache first
                 const cached = loadLabelCache(itemId);
-                
+
                 if (cached) {
-                    // Use cached data
                     displayLabel.innerHTML = cached.label;
-                    
-                    // Add hidden metadata for search
                     let metadata = li.querySelector('.search-metadata');
                     if (!metadata) {
                         metadata = document.createElement('span');
@@ -679,22 +529,14 @@
                     }
                     metadata.textContent = cached.metadata;
                 } else {
-                    // Decrypt and cache
-                    const encName = li.querySelector('.enc-name').value;
-                    const encDomain = li.querySelector('.enc-domain').value;
-                    const encUser = li.querySelector('.enc-user').value;
-
                     const [name, domain, user] = await Promise.all([
-                        decrypt(encName, masterPass),
-                        decrypt(encDomain, masterPass),
-                        decrypt(encUser, masterPass)
+                        decrypt(li.querySelector('.enc-name').value, masterPass),
+                        decrypt(li.querySelector('.enc-domain').value, masterPass),
+                        decrypt(li.querySelector('.enc-user').value, masterPass)
                     ]);
-
-                    // UI display logic: Name > Domain > User
                     const label = name || domain || user || "Unnamed Entry";
                     displayLabel.innerHTML = label;
-                    
-                    // Add hidden metadata for search
+
                     let metadata = li.querySelector('.search-metadata');
                     if (!metadata) {
                         metadata = document.createElement('span');
@@ -704,44 +546,25 @@
                     }
                     const metadataText = `${name} ${domain} ${user}`;
                     metadata.textContent = metadataText;
-                    
-                    // Save to cache
                     saveLabelCache(itemId, label, metadataText);
                 }
-                
+
                 processed++;
-                
-                // Update progress
                 if (needsDecryption > 0) {
-                    const progress = (processed / items.length) * 100;
-                    progressBar.style.width = `${progress}%`;
+                    progressBar.style.width = `${(processed / items.length) * 100}%`;
                     progressText.textContent = `${processed} / ${items.length}`;
-                    
-                    if (processed === items.length) {
-                        statusText.textContent = '✓ Decryption complete!';
-                    }
+                    if (processed === items.length) statusText.textContent = '✓ Decryption complete!';
                 }
-                
-                // Small delay every 10 items to keep UI responsive
-                if (processed % 10 === 0) {
-                    await new Promise(resolve => setTimeout(resolve, 10));
-                }
+                if (processed % 10 === 0) await new Promise(r => setTimeout(r, 10));
             }
-            
-            // Hide loading modal after completion
-            if (needsDecryption > 0) {
-                setTimeout(() => {
-                    loadingModal.classList.add('hidden');
-                }, 500);
-            }
+
+            if (needsDecryption > 0) setTimeout(() => loadingModal.classList.add('hidden'), 500);
         }
 
         function filterVault() {
             const query = document.getElementById('vaultSearch').value.toLowerCase();
-            const items = document.querySelectorAll('.vault-item');
-            items.forEach(li => {
-                const text = li.textContent.toLowerCase();
-                li.style.display = text.includes(query) ? "" : "none";
+            document.querySelectorAll('.vault-item').forEach(li => {
+                li.style.display = li.textContent.toLowerCase().includes(query) ? "" : "none";
             });
         }
 
@@ -749,7 +572,7 @@
             const masterPass = sessionStorage.getItem("master_key");
             const li = button.closest('.vault-item');
             const container = li.querySelector('.entry-container');
-            
+
             const domain = await decrypt(li.querySelector('.enc-domain').value, masterPass);
             const user = await decrypt(li.querySelector('.enc-user').value, masterPass);
             const pass = await decrypt(li.querySelector('.enc-pass').value, masterPass);
@@ -762,68 +585,42 @@
                         <p class="text-xs text-cyber-muted mb-1">Entry Name</p>
                         <p class="text-cyber-text font-medium">${name}</p>
                     </div>` : ''}
-                    
                     <div>
                         <p class="text-xs text-cyber-muted mb-1">Domain</p>
                         <div class="flex items-center gap-2">
                             <code class="flex-1 text-sm text-cyber-text font-mono bg-cyber-elevated px-3 py-1.5 rounded">${domain}</code>
-                            <button 
-                                onclick="window.open('${launchUrl}', '_blank')"
-                                class="bg-cyber-primary/20 hover:bg-cyber-primary/30 text-cyber-primary p-1.5 rounded transition-all"
-                                title="Open in new tab"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                                </svg>
+                            <button type="button" onclick="window.open('${launchUrl}', '_blank')"
+                                class="bg-cyber-primary/20 hover:bg-cyber-primary/30 text-cyber-primary p-1.5 rounded transition-all" title="Open in new tab">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             </button>
                         </div>
                     </div>
-
                     <div>
                         <p class="text-xs text-cyber-muted mb-1">Username</p>
                         <div class="flex items-center gap-2">
                             <code class="flex-1 text-sm text-cyber-text font-mono bg-cyber-elevated px-3 py-1.5 rounded break-all">${user}</code>
-                            <button 
-                                onclick="copyToClipboard('${user.replace(/'/g, "\\'")}')"
-                                class="bg-cyber-success/20 hover:bg-cyber-success/30 text-cyber-success p-1.5 rounded transition-all"
-                                title="Copy username"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
+                            <button type="button" onclick="copyToClipboard('${user.replace(/'/g, "\\'")}')"
+                                class="bg-cyber-success/20 hover:bg-cyber-success/30 text-cyber-success p-1.5 rounded transition-all" title="Copy username">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                             </button>
                         </div>
                     </div>
-
                     <div>
                         <p class="text-xs text-cyber-muted mb-1">Password</p>
                         <div class="flex items-center gap-2">
                             <code class="pass-text flex-1 text-sm text-cyber-text font-mono bg-cyber-elevated px-3 py-1.5 rounded">*******</code>
-                            <button 
-                                onclick="togglePassword(this, '${pass.replace(/'/g, "\\'")}')"
-                                class="bg-cyber-secondary/20 hover:bg-cyber-secondary/30 text-cyber-secondary p-1.5 rounded transition-all"
-                                title="Toggle visibility"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
+                            <button type="button" onclick="togglePassword(this, '${pass.replace(/'/g, "\\'")}')"
+                                class="bg-cyber-secondary/20 hover:bg-cyber-secondary/30 text-cyber-secondary p-1.5 rounded transition-all" title="Toggle visibility">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                             </button>
-                            <button 
-                                onclick="copyToClipboard('${pass.replace(/'/g, "\\'")}')"
-                                class="bg-cyber-success/20 hover:bg-cyber-success/30 text-cyber-success p-1.5 rounded transition-all"
-                                title="Copy password"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                </svg>
+                            <button type="button" onclick="copyToClipboard('${pass.replace(/'/g, "\\'")}')"
+                                class="bg-cyber-success/20 hover:bg-cyber-success/30 text-cyber-success p-1.5 rounded transition-all" title="Copy password">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                             </button>
                         </div>
                     </div>
-                </div>
-            `;
-            
-            // Change card styling when unlocked
+                </div>`;
+
             container.classList.remove('locked-gradient', 'border-cyber-primary/20');
             container.classList.add('bg-cyber-elevated', 'border-cyber-success/20');
         }
@@ -831,7 +628,7 @@
         async function prepareEdit(id, button) {
             const masterPass = sessionStorage.getItem("master_key");
             const li = button.closest('.vault-item');
-            
+
             document.getElementById('edit_id').value = id;
             document.getElementById('form_name').value = await decrypt(li.querySelector('.enc-name').value, masterPass);
             document.getElementById('form_domain').value = await decrypt(li.querySelector('.enc-domain').value, masterPass);
@@ -844,10 +641,20 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                     Update Entry
-                </span>
-            `;
+                </span>`;
             document.getElementById('cancelBtn').style.display = "inline-block";
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function deleteEntry(id) {
+            if (!confirm('Are you sure you want to delete this entry? This cannot be undone.')) return;
+            const response = await fetch(`/delete/${id}`, { method: 'POST' });
+            if (response.ok) {
+                document.getElementById(`item-${id}`).remove();
+                showToast('Entry deleted.');
+            } else {
+                showToast('Failed to delete entry.');
+            }
         }
 
         function resetForm() {
@@ -859,8 +666,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     Add to Vault
-                </span>
-            `;
+                </span>`;
             document.getElementById('cancelBtn').style.display = "none";
         }
 
@@ -868,7 +674,7 @@
             e.preventDefault();
             const masterPass = sessionStorage.getItem("master_key");
             const editId = document.getElementById('edit_id').value;
-            
+
             const payload = {
                 name: await encrypt(document.getElementById('form_name').value, masterPass),
                 domain: await encrypt(document.getElementById('form_domain').value, masterPass),
@@ -876,19 +682,16 @@
                 domain_pass: await encrypt(document.getElementById('form_password').value, masterPass)
             };
 
-            const url = editId ? `/edit/${editId}` : "/add";
-            const response = await fetch(url, {
+            const response = await fetch(editId ? `/edit/${editId}` : "/add", {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
             if (response.ok) window.location.reload();
-            else alert("Error saving entry.");
+            else showToast('Error saving entry.');
         };
 
-        // --- ENHANCED CSV IMPORT WITH PROGRESS BAR ---
-        // --- ENHANCED CSV IMPORT WITH PAPAPARSE ---
         async function handleCSV(input) {
             const file = input.files[0];
             const masterPass = sessionStorage.getItem("master_key");
@@ -902,16 +705,10 @@
             modal.classList.remove('hidden');
             statusText.textContent = 'Parsing CSV file...';
 
-            // Use PapaParse to parse the CSV
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
                 complete: async (results) => {
-                    console.log('=== CSV IMPORT DEBUG (PapaParse) ===');
-                    console.log('Headers detected:', results.meta.fields);
-                    console.log('Total rows:', results.data.length);
-                    console.log('First 3 rows:', results.data.slice(0, 3));
-
                     const rows = results.data;
                     const headers = results.meta.fields;
 
@@ -921,178 +718,87 @@
                         return;
                     }
 
-                    // Find column names (case-insensitive)
                     const headerMap = {};
-                    headers.forEach(h => {
-                        const lower = h.toLowerCase().trim();
-                        headerMap[lower] = h;
-                    });
+                    headers.forEach(h => { headerMap[h.toLowerCase().trim()] = h; });
 
-                    // Find the actual column names in the CSV
-                    const nameCol = Object.keys(headerMap).find(h => 
-                        h.includes('name') || h.includes('title')
-                    );
-                    const uriCol = Object.keys(headerMap).find(h => 
-                        h.includes('uri') || h.includes('url') || h.includes('domain') || 
-                        h.includes('website') || h.includes('login_uri')
-                    );
-                    const usernameCol = Object.keys(headerMap).find(h => 
-                        h.includes('username') || h.includes('user') || h.includes('login')
-                    );
-                    const passwordCol = Object.keys(headerMap).find(h => 
-                        h.includes('password') || h.includes('pass')
-                    );
-
-                    console.log('Column mapping:', {
-                        name: nameCol ? headerMap[nameCol] : 'NOT FOUND',
-                        uri: uriCol ? headerMap[uriCol] : 'NOT FOUND',
-                        username: usernameCol ? headerMap[usernameCol] : 'NOT FOUND',
-                        password: passwordCol ? headerMap[passwordCol] : 'NOT FOUND'
-                    });
+                    const nameCol = Object.keys(headerMap).find(h => h.includes('name') || h.includes('title'));
+                    const uriCol = Object.keys(headerMap).find(h => h.includes('uri') || h.includes('url') || h.includes('domain') || h.includes('website') || h.includes('login_uri'));
+                    const usernameCol = Object.keys(headerMap).find(h => h.includes('username') || h.includes('user') || h.includes('login'));
+                    const passwordCol = Object.keys(headerMap).find(h => h.includes('password') || h.includes('pass'));
 
                     if (!usernameCol || !passwordCol) {
                         statusText.textContent = 'Error: CSV must contain username and password columns';
-                        console.error('Missing required columns. Available headers:', headers);
                         setTimeout(() => modal.classList.add('hidden'), 3000);
                         return;
                     }
 
                     const total = rows.length;
-                    let imported = 0;
-                    let failed = 0;
-                    let skipped = 0;
-
+                    let imported = 0, failed = 0, skipped = 0;
                     progressText.textContent = `0 / ${total}`;
                     statusText.textContent = 'Starting import...';
 
                     for (let i = 0; i < rows.length; i++) {
                         const row = rows[i];
-
-                        // Extract data using actual column names
                         const name = nameCol ? (row[headerMap[nameCol]] || '').trim() : '';
                         const uri = uriCol ? (row[headerMap[uriCol]] || '').trim() : '';
                         const username = usernameCol ? (row[headerMap[usernameCol]] || '').trim() : '';
                         const password = passwordCol ? (row[headerMap[passwordCol]] || '').trim() : '';
 
-                        // Debug first 3 rows
-                        if (i < 3) {
-                            console.log(`\nRow ${i + 1}:`, row);
-                            console.log(`Row ${i + 1} extracted:`, {
-                                name: name || '(empty)',
-                                uri: uri || '(empty)',
-                                username: username || '(empty)',
-                                password: password ? '***' + password.slice(-3) : '(empty)'
-                            });
-                        }
-
-                        // Skip rows without password (password is required)
-                        if (!password) {
-                            if (i < 3) console.log(`Skipping row ${i + 1}: missing password`);
+                        if (!password || uri.includes('chrome://')) {
                             skipped++;
-                            
-                            // Update progress
-                            const progress = ((i + 1) / total) * 100;
-                            progressBar.style.width = `${progress}%`;
+                            progressBar.style.width = `${((i + 1) / total) * 100}%`;
                             progressText.textContent = `${i + 1} / ${total}`;
                             continue;
                         }
 
-                        // Skip Firefox/Chrome internal accounts
-                        if (uri.includes('chrome://')) {
-                            if (i < 3) console.log(`Skipping row ${i + 1}: internal browser account`);
-                            skipped++;
-                            
-                            // Update progress
-                            const progress = ((i + 1) / total) * 100;
-                            progressBar.style.width = `${progress}%`;
-                            progressText.textContent = `${i + 1} / ${total}`;
-                            continue;
-                        }
-
-                        // Use name if available, otherwise use URI, otherwise use "No Name"
                         const displayName = name || uri || "Unnamed Entry";
                         const domain = uri || displayName;
-                        
-                        // Use username if available, otherwise use domain or name as fallback
                         const finalUsername = username || domain || displayName;
 
-                        if (i < 3) {
-                            console.log(`Row ${i + 1} final values:`, {
-                                displayName,
-                                domain,
-                                finalUsername,
-                                password: '***'
-                            });
-                        }
-
                         try {
-                            const payload = {
-                                name: await encrypt(displayName, masterPass),
-                                domain: await encrypt(domain, masterPass),
-                                domain_usr: await encrypt(finalUsername, masterPass),
-                                domain_pass: await encrypt(password, masterPass)
-                            };
-
                             const response = await fetch("/add", {
                                 method: "POST",
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(payload)
+                                body: JSON.stringify({
+                                    name: await encrypt(displayName, masterPass),
+                                    domain: await encrypt(domain, masterPass),
+                                    domain_usr: await encrypt(finalUsername, masterPass),
+                                    domain_pass: await encrypt(password, masterPass)
+                                })
                             });
+                            if (response.ok) imported++;
+                            else failed++;
+                        } catch (e) { failed++; }
 
-                            if (response.ok) {
-                                imported++;
-                                if (i < 3) console.log(`Row ${i + 1}: Import successful`);
-                            } else {
-                                const errorText = await response.text();
-                                console.error(`Row ${i + 1}: Import failed -`, errorText);
-                                failed++;
-                            }
-                        } catch (e) {
-                            console.error(`Row ${i + 1}: Exception -`, e);
-                            failed++;
-                        }
-
-                        // Update progress
-                        const progress = ((i + 1) / total) * 100;
-                        progressBar.style.width = `${progress}%`;
+                        progressBar.style.width = `${((i + 1) / total) * 100}%`;
                         progressText.textContent = `${i + 1} / ${total}`;
                         statusText.textContent = `Imported ${imported} passwords...`;
-
-                        // Small delay to allow UI updates
-                        if (i % 5 === 0) {
-                            await new Promise(resolve => setTimeout(resolve, 50));
-                        }
+                        if (i % 5 === 0) await new Promise(r => setTimeout(r, 50));
                     }
 
-                    const summary = `✓ Complete! Imported ${imported}${failed > 0 ? `, ${failed} failed` : ''}${skipped > 0 ? `, ${skipped} skipped` : ''}`;
-                    statusText.textContent = summary;
+                    statusText.textContent = `✓ Complete! Imported ${imported}${failed > 0 ? `, ${failed} failed` : ''}${skipped > 0 ? `, ${skipped} skipped` : ''}`;
                     progressBar.style.width = '100%';
-                    
-                    console.log('=== IMPORT SUMMARY ===');
-                    console.log({ imported, failed, skipped, total });
-                    
+
                     setTimeout(() => {
                         modal.classList.add('hidden');
                         showToast(`Successfully imported ${imported} passwords!`);
                         setTimeout(() => window.location.reload(), 1000);
                     }, 1500);
                 },
-                error: (error) => {
-                    console.error('PapaParse error:', error);
+                error: () => {
                     statusText.textContent = 'Error parsing CSV file';
                     setTimeout(() => modal.classList.add('hidden'), 2000);
                 }
             });
 
-            input.value = ''; // Reset file input
+            input.value = '';
         }
 
         async function exportCSV() {
             const masterPass = sessionStorage.getItem("master_key");
-            if (!masterPass) return alert("Unlock vault first.");
+            if (!masterPass) { showToast('Unlock vault first.'); return; }
 
             const items = document.querySelectorAll('.vault-item');
-            
             let csvContent = `"url","username","password","httpRealm","formActionOrigin","guid","timeCreated","timeLastUsed","timePasswordChanged"\n`;
 
             for (let li of items) {
@@ -1100,63 +806,36 @@
                     let domain = await decrypt(li.querySelector('.enc-domain').value, masterPass);
                     const user = await decrypt(li.querySelector('.enc-user').value, masterPass);
                     const pass = await decrypt(li.querySelector('.enc-pass').value, masterPass);
-
-                    if (domain && !domain.match(/^[a-zA-Z]+:\/\//)) {
-                        domain = "https://" + domain;
-                    }
-
-                    const fUrl = `"${domain.replace(/"/g, '""')}"`;
-                    const fUser = `"${user.replace(/"/g, '""')}"`;
-                    const fPass = `"${pass.replace(/"/g, '""')}"`;
-
-                    csvContent += `${fUrl},${fUser},${fPass},"","","","","",""\n`;
-                } catch (e) {
-                    console.error("Export decryption failed for an item.", e);
-                }
+                    if (domain && !domain.match(/^[a-zA-Z]+:\/\//)) domain = "https://" + domain;
+                    csvContent += `"${domain.replace(/"/g, '""')}","${user.replace(/"/g, '""')}","${pass.replace(/"/g, '""')}","","","","","",""\n`;
+                } catch (e) { console.error("Export decryption failed for an item.", e); }
             }
 
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            
-            link.setAttribute("href", url);
+            link.setAttribute("href", URL.createObjectURL(new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })));
             link.setAttribute("download", "lockbox_export.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
             showToast('Export successful!');
         }
 
-        // --- CACHE MANAGEMENT FUNCTIONS ---
         function showCacheInfo() {
             try {
-                const cacheKey = getCacheKey();
-                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
+                const cache = JSON.parse(localStorage.getItem(getCacheKey()) || '{}');
                 const cacheSize = Object.keys(cache).length;
-                const oldestEntry = Object.values(cache).reduce((oldest, entry) => {
-                    return !oldest || entry.timestamp < oldest.timestamp ? entry : oldest;
-                }, null);
-                
-                let message = `Cache contains ${cacheSize} decrypted label(s).\n\n`;
-                
-                if (oldestEntry) {
-                    const age = Date.now() - oldestEntry.timestamp;
-                    const minutes = Math.floor(age / 60000);
-                    const remaining = Math.floor((CACHE_DURATION - age) / 60000);
-                    message += `Oldest entry: ${minutes} minute(s) ago\n`;
-                    message += `Cache expires in: ${remaining} minute(s)\n\n`;
+                const oldest = Object.values(cache).reduce((a, b) => (!a || b.timestamp < a.timestamp ? b : a), null);
+                let msg = `Cache contains ${cacheSize} decrypted label(s).\n\n`;
+                if (oldest) {
+                    const age = Math.floor((Date.now() - oldest.timestamp) / 60000);
+                    const remaining = Math.floor((CACHE_DURATION - (Date.now() - oldest.timestamp)) / 60000);
+                    msg += `Oldest entry: ${age} minute(s) ago\nCache expires in: ${remaining} minute(s)\n\n`;
                 }
-                
-                message += `Cache duration: 30 minutes\n`;
-                message += `This speeds up vault loading on subsequent visits.`;
-                
-                alert(message);
-            } catch (e) {
-                alert('No cache data found.');
-            }
+                msg += `Cache duration: 30 minutes\nThis speeds up vault loading on subsequent visits.`;
+                alert(msg);
+            } catch (e) { alert('No cache data found.'); }
         }
-        
+
         function clearCacheAndReload() {
             if (confirm('Clear all cached labels? They will be re-decrypted on next load.')) {
                 clearLabelCache();
@@ -1164,26 +843,22 @@
                 setTimeout(() => window.location.reload(), 1000);
             }
         }
-        
-        // Update cache indicator on load
+
         function updateCacheIndicator() {
             try {
-                const cacheKey = getCacheKey();
-                const cache = JSON.parse(localStorage.getItem(cacheKey) || '{}');
-                const cacheSize = Object.keys(cache).length;
-                const indicator = document.getElementById('cacheIndicator');
-                if (indicator) {
-                    indicator.textContent = cacheSize > 0 ? `Cache: ${cacheSize} items` : 'Cache: Empty';
-                }
-            } catch (e) {
-                // Ignore
-            }
+                const cache = JSON.parse(localStorage.getItem(getCacheKey()) || '{}');
+                const size = Object.keys(cache).length;
+                const el = document.getElementById('cacheIndicator');
+                if (el) el.textContent = size > 0 ? `Cache: ${size} items` : 'Cache: Empty';
+            } catch (e) {}
         }
 
-        // --- DELETE ALL FUNCTIONALITY ---
         function showDeleteAllModal() {
             const items = document.querySelectorAll('.vault-item');
-            document.getElementById('deleteAllCount').textContent = items.length;
+            if (items.length === 0) { showToast('No passwords to delete.'); return; }
+            const count = items.length;
+            document.getElementById('deleteAllCount').textContent = count;
+            document.getElementById('deleteAllWord').textContent = count === 1 ? 'password' : 'passwords';
             document.getElementById('deleteAllModal').classList.remove('hidden');
         }
 
@@ -1192,34 +867,20 @@
         }
 
         async function confirmDeleteAll() {
-            const items = document.querySelectorAll('.vault-item');
-            const modal = document.getElementById('deleteAllModal');
-            
-            modal.classList.add('hidden');
-            
-            let deleted = 0;
-            for (let li of items) {
-                const itemId = li.id.replace('item-', '');
-                try {
-                    const response = await fetch(`/delete/${itemId}`);
-                    if (response.ok) deleted++;
-                } catch (e) {
-                    console.error('Failed to delete item:', e);
-                }
+            closeDeleteAllModal();
+            const response = await fetch('/delete-all', { method: 'POST' });
+            const data = await response.json();
+            if (response.ok) {
+                showToast(`Deleted ${data.deleted} ${data.deleted === 1 ? 'password' : 'passwords'}`);
+                setTimeout(() => window.location.reload(), 350);
+            } else {
+                showToast('Failed to delete passwords.');
             }
-
-            showToast(`Deleted ${deleted} passwords`);
-            setTimeout(() => window.location.reload(), 1000);
         }
 
-        // Run background decryption immediately when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', async () => {
-                await enableSearch();
-                updateCacheIndicator();
-            });
+            document.addEventListener('DOMContentLoaded', async () => { await enableSearch(); updateCacheIndicator(); });
         } else {
-            // DOM already loaded, run immediately
             enableSearch().then(() => updateCacheIndicator());
         }
     </script>
