@@ -1,30 +1,37 @@
 ARG PY_VERSION=3.12
-FROM python:${PY_VERSION}-alpine3.21 AS builder
+FROM ghcr.io/astral-sh/uv:0.10.8-python${PY_VERSION}-alpine AS builder
 
 WORKDIR /build
 RUN apk add --no-cache build-base gcc musl-dev libffi-dev
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN uv venv /build/.venv
+
+RUN uv pip install --no-cache -r requirements.txt --python /build/.venv/bin/python
 
 # Runner stage
-FROM python:${PY_VERSION}-alpine3.21
-WORKDIR /frontend
+# Stage 2: Run
+FROM python:${PY_VERSION}-alpine AS runner
+WORKDIR /app
 
-# Create user first
+ARG PY_VERSION
+
 RUN adduser -D python-web
 
-# Copy the local bin and site-packages from the builder's user home
-COPY --from=builder /root/.local /home/python-web/.local
+# Copy the venv from the builder to the runner
+COPY --from=builder /build/.venv /app/.venv
 
-ENV PATH="/home/python-web/.local/bin:${PATH}"
-ENV PYTHONPATH="/home/python-web/.local/lib/python${PY_VERSION}/site-packages"
+ENV PATH="/app/.venv/bin:$PATH"
 
-COPY main.py ./
+ENV PYTHONUNBUFFERED=1
+
+# Copy your code
+COPY main.py .
 COPY app ./app
 
-RUN chown -R python-web:python-web /home/python-web/.local /frontend
+RUN chown -R python-web:python-web /app
 USER python-web
+
 EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
