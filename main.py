@@ -19,7 +19,6 @@ async def lifespan(app):
     try:
         if not check_if_db_exists():
             await create_db_if_not_exists()
-
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         async with async_session() as session:

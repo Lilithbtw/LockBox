@@ -37,16 +37,13 @@ async def check_if_db_exists():
     try:
         temp_engine = create_async_engine(SERVER_URL)
         async with temp_engine.connect() as conn:
-            result = await conn.execute(text(f"SHOW DATABASES LIKE {DB_NAME};"))
+            result = await conn.execute(text(f"SHOW DATABASES LIKE '{DB_NAME}'"))
+            row = result.fetchone()
         await temp_engine.dispose()
-        
-        if result == {DB_NAME}:
-            return True
-        else:
-            return False
-        
-    except (OperationalError,Exception) as e:
-        print(f"Database not ready... (Error: {e}")
+        return row is not None
+    except Exception as e:
+        print(f"Check failed (DB likely not ready): {e}")
+        return False
 
 engine = create_async_engine(DATABASE_URL, echo=True)
 
