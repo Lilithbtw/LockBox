@@ -19,6 +19,8 @@ services:
   phpmyadmin:
     image: phpmyadmin
     container_name: phpmyadmin
+    ports:
+      - 8080:80
     environment:
       PMA_HOST: db
     depends_on:
@@ -32,11 +34,16 @@ services:
       dockerfile: Dockerfile
     networks:
       - backend
+    ports:
+      - 5555:8000
     environment:
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
       DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
+      SESSION_SECRET: ${SESSION_SECRET}
+      ONBOARDING: something
+      depends_on: db
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8000/health || exit 1"]
       interval: 30s

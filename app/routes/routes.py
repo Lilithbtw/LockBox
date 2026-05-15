@@ -1,13 +1,11 @@
 from starlette.routing import Route
 from starlette.responses import FileResponse, JSONResponse
 import os
-from dotenv import load_dotenv
 
 from .views import *
 
-load_dotenv()
-
 onboarding = os.getenv("ONBOARDING")
+print(onboarding)
 
 routes = [
     Route("/", homepage),

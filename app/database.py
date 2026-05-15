@@ -5,6 +5,7 @@ from sqlalchemy.exc import OperationalError
 from os import getenv
 from dotenv import load_dotenv
 import asyncio
+import urllib.parse
 
 load_dotenv()
 
@@ -14,7 +15,12 @@ PORT = getenv("DB_PORT", 3306)
 DB_NAME = getenv("DB_NAME")
 HOST = getenv("DB_HOST")
 
-SERVER_URL = f"mysql+asyncmy://{USER}:{PASSWORD}@{HOST}:{PORT}"
+# 1. URL-encode the password to handle special characters safely
+safe_user = urllib.parse.quote_plus(USER) if USER else ""
+safe_pass = urllib.parse.quote_plus(PASSWORD) if PASSWORD else ""
+
+# 2. Build the URL robustly
+SERVER_URL = f"mysql+aiomysql://{safe_user}:{safe_pass}@{HOST}:{PORT}"
 DATABASE_URL = f"{SERVER_URL}/{DB_NAME}"
 
 async def create_db_if_not_exists():

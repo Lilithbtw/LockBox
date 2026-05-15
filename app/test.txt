@@ -1,0 +1,4 @@
+echo 'lckbox_admin' | docker secret create DB_USER -
+echo '4mgOpb^7c?3qe' | docker secret create DB_PASS -
+echo 'lckboxDB' | docker secret create DB_NAME -
+echo 'wYQz5xrpiMy7lyVCDG3GeiCdHCxIDdW9uQ31dthgWuQ=' | docker secret create SESSION_SECRET -
